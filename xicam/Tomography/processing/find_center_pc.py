@@ -18,7 +18,7 @@ class FindCenterPc(ProcessingPlugin):
 
     proj1 = Input(description="2D projection data", np.ndarray)
     proj2 = Input(description="2D projection data", np.ndarray)
-    tol = Input(description="Subpixel accuracy", type=float)
+    tol = Input(description="Subpixel accuracy", type=float, default = 0.5)
 
     center = Output(description="Rotation axis location", type=float)
 
