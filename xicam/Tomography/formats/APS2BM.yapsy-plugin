@@ -1,6 +1,6 @@
 [Core]
-Name = dataexchange
-Module = dataexchange.py
+Name = APS2BM
+Module = APS2BM.py
 
 [Documentation]
 Author = Ronald J. Pandolfi

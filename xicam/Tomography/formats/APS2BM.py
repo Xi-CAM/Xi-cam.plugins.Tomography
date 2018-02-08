@@ -8,7 +8,7 @@ import re
 import functools
 from pathlib import Path
 import h5py
-
+import numpy as np
 
 class APS2BM(DataHandlerPlugin):
     """
@@ -16,33 +16,40 @@ class APS2BM(DataHandlerPlugin):
     """
     name = 'APS2BM'
 
+    DEFAULT_EXTENTIONS = ['.hdf', '.h5']
+
     descriptor_keys = []
 
-    def __init__(self, path, *args, **kwargs):
-        self.path = path
-        super(APS2BM, self).__init__()
-
-    def __call__(self, *args, **kwargs):
-        if 'flat' in kwargs:
-            return dxchange.read_aps_2bm(self.path, (0, 1, 1), **kwargs)[1]
-        elif 'dark' in kwargs:
-            return dxchange.read_aps_2bm(self.path, (0, 1, 1), **kwargs)[2]
+    def __call__(self, path, arr='data', slice=None, **kwargs):
+        h5 = h5py.File(path, 'r')
+        if arr == 'sino':
+            return np.squeeze(h5['exchange']['data'][:][slice])
         else:
-            return dxchange.read_aps_2bm(self.path, *args, **kwargs)[0]
+            return np.squeeze(h5['exchange'][arr][slice])
+            # if 'flat' in kwargs:
+            #     # return np.squeeze(dxchange.read_aps_2bm(path, (0, 1, 1), **kwargs)[1])
+            # elif 'dark' in kwargs:
+            #     return np.squeeze(dxchange.read_aps_2bm(path, (0, 1, 1), **kwargs)[2])
+            # else:
+            #     return np.squeeze(dxchange.read_aps_2bm(path, *args, **kwargs)[0])
+
+    @classmethod
+    def reduce_paths(cls, paths):
+        return paths[0]
 
     @classmethod
     def getEventDocs(cls, path, descriptor_uid):
         for proj_index in range(cls.num_projections(path)):
-            yield embedded_local_event_doc(descriptor_uid, 'projection', cls, (path,), {'proj': proj_index})
+            yield embedded_local_event_doc(descriptor_uid, 'projection', cls, (path, 'data', proj_index))
 
         for sino_index in range(cls.num_sinograms(path)):
-            yield embedded_local_event_doc(descriptor_uid, 'sinogram', cls, (path,), {'sino': sino_index})
+            yield embedded_local_event_doc(descriptor_uid, 'sinogram', cls, (path, 'sino', sino_index))
 
         for flat_index in range(cls.num_flats(path)):
-            yield embedded_local_event_doc(descriptor_uid, 'flat', cls, (path,), {'flat': flat_index})
+            yield embedded_local_event_doc(descriptor_uid, 'flat', cls, (path, 'data_white', flat_index))
 
         for dark_index in range(cls.num_darks(path)):
-            yield embedded_local_event_doc(descriptor_uid, 'dark', cls, (path,), {'dark': dark_index})
+            yield embedded_local_event_doc(descriptor_uid, 'dark', cls, (path, 'data_dark', dark_index))
 
     @classmethod
     def num_projections(cls, path):
@@ -63,3 +70,11 @@ class APS2BM(DataHandlerPlugin):
     def num_darks(cls, path):
         with h5py.File(path, 'r') as h5:
             return h5['exchange']['data_dark'].shape[0]
+
+    @classmethod
+    def getStartDoc(cls, paths, start_uid):
+        return start_doc(start_uid=start_uid)
+
+    @classmethod
+    def getDescriptorDocs(cls, paths, start_uid, descriptor_uid):
+        yield descriptor_doc(start_uid, descriptor_uid)
