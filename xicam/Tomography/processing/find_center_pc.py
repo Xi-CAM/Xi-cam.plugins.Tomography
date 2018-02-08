@@ -16,8 +16,8 @@ class FindCenterPc(ProcessingPlugin):
     optimization module) as the optimizer :cite:`Donath:06`.
     """
 
-    proj1 = Input(description="2D projection data", np.ndarray)
-    proj2 = Input(description="2D projection data", np.ndarray)
+    proj1 = Input(description="2D projection data", type=np.ndarray)
+    proj2 = Input(description="2D projection data", type=np.ndarray)
     tol = Input(description="Subpixel accuracy", type=float, default = 0.5)
 
     center = Output(description="Rotation axis location", type=float)

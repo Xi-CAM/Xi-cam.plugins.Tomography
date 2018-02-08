@@ -17,7 +17,7 @@ class FindCenter(ProcessingPlugin):
     """
 
     tomo = Input(description="3D tomographic data", type=np.ndarray)
-    theta = Input(description="Projection angles in radian", np.ndarray)
+    theta = Input(description="Projection angles in radian", type=np.ndarray)
     ind = Input(
         description="Index of the slice to be used for reconstruction",
         default=None,
