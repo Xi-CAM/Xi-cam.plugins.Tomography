@@ -3,7 +3,6 @@ from qtpy.QtCore import *
 from qtpy.QtGui import *
 from qtpy.QtWidgets import *
 
-from xicam.core import msg
 from xicam.core.data import load_header, NonDBHeader
 from xicam.core.execution.workflow import Workflow
 
@@ -24,12 +23,11 @@ class TomographyPlugin(GUIPlugin):
         self.headermodel = QStandardItemModel()
         self.alignmenttabview = TabView()
         self.alignmenttabview.setModel(self.headermodel)
-        # self.alignmenttabview.setWidgetClass(AlignmentViewer)
-        # self.toolbar = SAXSToolbar(self.tabview)
+        self.workfloweditor = WorkflowEditor(self.workflow)
+        self.workfloweditor.setHidden(True)
 
         self.stages = {
-            'Alignment': GUILayout(self.alignmenttabview, left=WorkflowEditor(self.workflow),
-                                   lefttop=PanelState.Disabled),
+            'Alignment': GUILayout(self.alignmenttabview, right=self.workfloweditor),
             'Preprocess': GUILayout(QLabel('Preprocess')),
             'Reconstruct': GUILayout(QLabel('Reconstruct'), ),
         }
