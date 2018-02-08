@@ -11,6 +11,7 @@ from xicam.plugins.GUIPlugin import PanelState
 
 from xicam.gui.widgets.tabview import TabView
 from xicam.gui.widgets.linearworkfloweditor import WorkflowEditor
+from .widgets.RAWViewer import RAWViewer
 
 
 class TomographyPlugin(GUIPlugin):
@@ -21,14 +22,15 @@ class TomographyPlugin(GUIPlugin):
         self.workflow = Workflow()
 
         self.headermodel = QStandardItemModel()
-        self.alignmenttabview = TabView()
-        self.alignmenttabview.setModel(self.headermodel)
+        # self.alignmenttabview = TabView(self.headermodel)
+        self.rawtabview = TabView(self.headermodel, widgetcls=RAWViewer, field='projection')
+
         self.workfloweditor = WorkflowEditor(self.workflow)
         self.workfloweditor.setHidden(True)
 
         self.stages = {
-            'Alignment': GUILayout(self.alignmenttabview, right=self.workfloweditor),
-            'Preprocess': GUILayout(QLabel('Preprocess')),
+            'Alignment': GUILayout(QLabel('Alignment'), right=self.workfloweditor),
+            'Preprocess': GUILayout(self.rawtabview, right=self.workfloweditor),
             'Reconstruct': GUILayout(QLabel('Reconstruct'), ),
         }
         super(TomographyPlugin, self).__init__()
