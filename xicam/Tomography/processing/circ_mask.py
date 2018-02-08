@@ -17,13 +17,16 @@ class CircMask(ProcessingPlugin):
     ratio = Input(
         description=
         "Ratio of the mask's diameter in pixels to the smallest edge size along given axis. ",
+        default=1.0,
         type=int)
-    val = Input(description="Value for the masked region", type=int)
+    val = Input(
+        description="Value for the masked region", default=0., type=int)
+
     circ_mask = Output(description="Masked array", type=np.ndarray)
 
     def evalulate(self):
         self.circ_mask.value = tomopy.circ_mask(
             self.arr.value,
-            axis=self.axis.value,
+            self.axis.value,
             ratio=self.ratio.value,
             val=self.val.value)

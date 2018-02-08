@@ -10,7 +10,7 @@ class RetrievePhase(ProcessingPlugin):
     """
     Perform single-step phase retrieval from phase-contrast measurements :cite:`Paganin:02`
     """
-    arr = Input(description="3D tomographic data", type=List)
+    arr = Input(description="3D tomographic data", type=np.ndarray)
     pixel_size = Input(
         description="Detector pixel size in cm", type=float, default=0.0001)
     dist = Input(

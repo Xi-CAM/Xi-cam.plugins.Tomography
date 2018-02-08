@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from xicam.plugins import ProcessingPlugin, Input, Output
+from xicam.plugins import ProcessingPlugin, Input
 import dxchange
 import numpy as np
 

@@ -20,16 +20,22 @@ class FindCenter(ProcessingPlugin):
     theta = Input(description="Projection angles in radian", np.ndarray)
     ind = Input(
         description="Index of the slice to be used for reconstruction",
+        default=None,
         type=int)
-    init = Input(description="Initial guess for the center", type=float)
-    tol = Input(description="Desired sub-pixel accuracy", type=float)
-    mask = Input(description="If True, apply a circular mask", type=bool)
+    init = Input(
+        description="Initial guess for the center", default=None, type=float)
+    tol = Input(
+        description="Desired sub-pixel accuracy", default=0.5, type=float)
+    mask = Input(
+        description="If True, apply a circular mask", default=True, type=bool)
     ratio = Input(
         description=
         "The ratio of the radius of the circular mask to the edge of the reconstructed image",
+        default=1.,
         type=float)
     sinogram_order = Input(
         type=bool,
+        default=False,
         description=
         "Determins whether data is a stack of sinograms (True, y-axis first axis) or a stack of radiographs (False, theta first axis)."
     )
