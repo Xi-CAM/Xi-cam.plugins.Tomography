@@ -36,7 +36,7 @@ class TomographyPlugin(GUIPlugin):
         super(TomographyPlugin, self).__init__()
 
     def appendHeader(self, header: NonDBHeader, **kwargs):
-        item = QStandardItem('???')
+        item = QStandardItem(header.startdoc.get('sample_name', '????'))
         item.header = header
         self.headermodel.appendRow(item)
         self.headermodel.dataChanged.emit(QModelIndex(), QModelIndex())
