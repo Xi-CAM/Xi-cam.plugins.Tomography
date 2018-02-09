@@ -78,3 +78,7 @@ class APS2BM(DataHandlerPlugin):
     @classmethod
     def getDescriptorDocs(cls, paths, start_uid, descriptor_uid):
         yield descriptor_doc(start_uid, descriptor_uid)
+
+    @classmethod
+    def title(cls, path):
+        return Path(path).resolve().stem
