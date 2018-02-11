@@ -28,7 +28,7 @@ class RemoveOutlier(ProcessingPlugin):
 
     corrected = Output(description="Corrected array", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.corrected.value = tomopy.remove_outlier(
             self.arr.value,
             self.dif.value,

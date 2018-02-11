@@ -1,0 +1,10 @@
+
+[Core]
+Name = normalize_bg
+Module = normalize_bg.py
+
+[Documentation]
+Author = Ronald J. Pandolfi
+Version = 0.1.0
+Website = http://lotsofplugins.com
+Description = My first plugin

@@ -10,17 +10,13 @@ class ArrayMax(ProcessingPlugin):
     Maximum value of the array
     """
     arr = Input(description="Input array", type=np.ndarray)
-    axis = Input(
-        description="Axis along which search is performed",
+    floor = Input(
+        description="Floor value for comparison",
         type=int,
-        default=None)
-    out = description(
+        default=0)
+    out = Output(
         description="Alternative output array in which to place the result",
-        type=np.ndarray,
-        default=None)
-
-    maxval = Output(description="Maximum value", type=scalar)
+        type=np.ndarray)
 
     def evalulate(self):
-        self.maxval.value = np.max(
-            self.arr.value, axis=self.axis.value, out=self.out.value)
+        self.out.value = np.maximum(self.arr.value, self.out.value)

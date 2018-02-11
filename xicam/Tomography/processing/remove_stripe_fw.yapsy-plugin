@@ -1,0 +1,10 @@
+
+[Core]
+Name = remove_stripe_fw
+Module = remove_stripe_fw.py
+
+[Documentation]
+Author = Ronald J. Pandolfi
+Version = 0.1.0
+Website = http://lotsofplugins.com
+Description = My first plugin

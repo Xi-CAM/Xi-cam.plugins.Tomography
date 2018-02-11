@@ -27,5 +27,4 @@ class Pad(ProcessingPlugin):
             self.axis.value,
             npad=self.npad.value,
             mode=self.mode.value,
-            ncore=self.ncore.value,
-            **kwargs)
+            ncore=self.ncore.value)
