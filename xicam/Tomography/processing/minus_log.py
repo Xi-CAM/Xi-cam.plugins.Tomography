@@ -25,6 +25,6 @@ class MinusLog(ProcessingPlugin):
     minuslog = Output(
         description="Minus-log of the input data", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.minuslog.value = tomopy.minus_log(
             self.arr.value, ncore=self.ncore.value, out=self.out.value)

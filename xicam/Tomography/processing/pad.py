@@ -21,7 +21,7 @@ class Pad(ProcessingPlugin):
 
     padded = Output(description="Padded 3D array", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.padded.value = tomopy.pad(
             self.arr.value,
             self.axis.value,

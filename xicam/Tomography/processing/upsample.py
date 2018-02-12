@@ -21,6 +21,6 @@ class Upsample(ProcessingPlugin):
     upsampled = Output(
         description="psampled 3D array in float32", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.upsampled.value = tomopy.upsample(
             self.arr.value, level=self.level.value, axis=self.axis.value)

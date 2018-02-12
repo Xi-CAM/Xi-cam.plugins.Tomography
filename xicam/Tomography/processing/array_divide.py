@@ -14,5 +14,5 @@ class ArrayDivide(ProcessingPlugin):
 
     out = Output(description="Array divided by the scalar", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.out.value = np.divide(self.arr.value, self.div.value)

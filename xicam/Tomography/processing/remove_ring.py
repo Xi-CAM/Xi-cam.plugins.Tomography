@@ -54,7 +54,7 @@ class RemoveRing(ProcessingPlugin):
     corrected = Output(
         description="Corrected reconstruction data", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.corrected.value = tomopy.remove_ring(
             self.arr.value,
             center_x=self.center_x.value,

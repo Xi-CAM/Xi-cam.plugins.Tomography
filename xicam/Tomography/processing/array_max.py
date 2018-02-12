@@ -18,5 +18,5 @@ class ArrayMax(ProcessingPlugin):
         description="Alternative output array in which to place the result",
         type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.out.value = np.maximum(self.arr.value, self.out.value)

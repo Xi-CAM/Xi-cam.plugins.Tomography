@@ -24,7 +24,7 @@ class CircMask(ProcessingPlugin):
 
     circ_mask = Output(description="Masked array", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.circ_mask.value = tomopy.circ_mask(
             self.arr.value,
             self.axis.value,

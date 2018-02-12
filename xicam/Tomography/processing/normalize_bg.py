@@ -31,7 +31,7 @@ class NormalizeBg(ProcessingPlugin):
     corrected = Output(
         description="Corrected 3D tomographic data", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.corrected.value = tomopy.normalize_bg(
             self.tomo.value,
             air=self.air.value,

@@ -16,6 +16,6 @@ class Angles(ProcessingPlugin):
     ang2 = Input(description='Last proj. angle in deg', type=int, default=180.)
     angles = Output(description='Projection angles', type='np.ndarray')
 
-    def evalulate(self):
+    def evaluate(self):
         self.angles.value = tomopy.angles(
             self.nang.value, ang1=self.ang1.value, ang2=self.ang2.value)

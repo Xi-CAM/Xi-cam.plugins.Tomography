@@ -66,7 +66,7 @@ class Recon(ProcessingPlugin):
     reconstructed = Output(
         description="Reconstructed 3D array", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         kwargs = {
             'num_gridx': self.num_gridx.value,
             'num_gridy': self.num_gridy.value,

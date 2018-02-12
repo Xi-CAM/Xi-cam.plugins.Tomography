@@ -18,7 +18,7 @@ class WriteTiffStack(ProcessingPlugin):
         description="Number of digits in trailing index", type=int, default=5)
     overwrite = Input(description="True or false", type=bool, default=False)
 
-    def evalulate(self):
+    def evaluate(self):
         dxchange.write_tiff_stack(
             self.data.value,
             fname=self.fname.value,
