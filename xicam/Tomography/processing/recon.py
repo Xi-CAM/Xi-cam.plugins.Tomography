@@ -67,16 +67,24 @@ class Recon(ProcessingPlugin):
         description="Reconstructed 3D array", type=np.ndarray)
 
     def evaluate(self):
-        kwargs = {
-            'num_gridx': self.num_gridx.value,
-            'num_gridy': self.num_gridy.value,
-            'filter_name': self.filter_name.value,
-            'filter_par': self.filter_par.value,
-            'num_iter': self.num_iter.value,
-            'num_block': self.num_block.value,
-            'ind_block': self.ind_block.value,
-            'reg_par': self.reg_par.value
-        }
+        if self.algorithm.value == 'gridrec':
+            kwargs = {
+                'num_gridx': self.num_gridx.value,
+                'num_gridy': self.num_gridy.value,
+                'filter_name': self.filter_name.value,
+                'filter_par': self.filter_par.value,
+            }
+        else:  # TODO: Not sure which are applicable to other algorithms yet
+            kwargs = {
+                'num_iter': self.num_iter.value,
+                'num_block': self.num_block.value,
+                'ind_block': self.ind_block.value,
+                'reg_par': self.reg_par.value
+            }
+
+        # remove unset kwargs
+        kwargs = {k: v for k, v in kwargs.items() if v}
+
         self.reconstructed.value = tomopy.recon(
             self.tomo.value,
             self.theta.value,

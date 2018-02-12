@@ -4,6 +4,7 @@
 from xicam.plugins import ProcessingPlugin, Input, Output
 import tomopy
 import numpy as np
+from tomopy.prep import stripe
 
 
 class RemoveStripeFw(ProcessingPlugin):
@@ -25,19 +26,25 @@ class RemoveStripeFw(ProcessingPlugin):
         "If True, extend the size of the sinogram by padding with zeros",
         type=bool,
         default=True)
-    ncore = Input(description="Number of CPU cores", type=int, default=None)
-    nchunk = Input(
-        description="Chunk size for each core", type=int, default=None)
+    # ncore = Input(description="Number of CPU cores", type=int, default=None)
+    # nchunk = Input(
+    #     description="Chunk size for each core", type=int, default=None)
 
     corrected = Output(
         description="Corrected 3D tomographic data", type=np.ndarray)
 
+    if level is None:
+        size = np.max(tomo.value.shape)
+        level = int(np.ceil(np.log2(size)))
+
     def evaluate(self):
-        self.corrected.value = tomopy.remove_stripe_fw(
-            self.tomo.value,
+        self.corrected.value = self.tomo.value.copy()
+        stripe._remove_stripe_fw(
+            self.corrected.value,
             level=self.level.value,
             wname=self.wname.value,
             sigma=self.sigma.value,
             pad=self.pad.value,
-            ncore=self.ncore.value,
-            nchunk=self.nchunk.value)
+            # ncore=self.ncore.value,
+            # nchunk=self.nchunk.value
+        )

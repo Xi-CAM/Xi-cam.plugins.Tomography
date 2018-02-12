@@ -1,5 +1,6 @@
-# from xicam.core.execution.workflow import Workflow
-from xicam.plugins.Workflow import Workflow, DaskWorkflow
+from xicam.core.execution.workflow import Workflow
+from xicam.core.execution.daskexecutor import DaskExecutor
+# from xicam.plugins.Workflow import Workflow, DaskWorkflow
 from xicam.Tomography.processing.read_APS2BM import read_APS2BM
 from xicam.Tomography.processing.remove_outlier import RemoveOutlier
 from xicam.Tomography.processing.array_max import ArrayMax
@@ -25,7 +26,7 @@ def test_tomoworkflow():
     outliers.size.value = 5
 
     maximum = ArrayMax()
-    maximum.arr.connect(outliers.corrected)
+    outliers.corrected.connect(maximum.arr)
     maximum.floor.value = 1e-16
 
     neglog = MinusLog()
@@ -81,6 +82,6 @@ def test_tomoworkflow():
                     ]:
         workflow.addProcess(process)
 
-    dsk = DaskWorkflow()
+    dsk = DaskExecutor()
     result = dsk.execute(workflow)
     print(result)
