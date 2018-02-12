@@ -12,11 +12,11 @@ class ArrayMax(ProcessingPlugin):
     arr = Input(description="Input array", type=np.ndarray)
     floor = Input(
         description="Floor value for comparison",
-        type=int,
+        type=float,
         default=0)
     out = Output(
         description="Alternative output array in which to place the result",
         type=np.ndarray)
 
     def evaluate(self):
-        self.out.value = np.maximum(self.arr.value, self.out.value)
+        self.out.value = np.maximum(self.arr.value, self.floor.value)
