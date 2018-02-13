@@ -83,7 +83,7 @@ class Recon(ProcessingPlugin):
             }
 
         # remove unset kwargs
-        kwargs = {k: v for k, v in kwargs.items() if v}
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
         self.reconstructed.value = tomopy.recon(
             self.tomo.value,

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from xicam.plugins import ProcessingPlugin, Input, Output
-import tomopy
+from tomopy.prep.phase import _retrieve_phase, _calc_pad, _reciprocal_grid, _paganin_filter_factor
 import numpy as np
 
 
@@ -30,12 +30,23 @@ class RetrievePhase(ProcessingPlugin):
         description="Approximated 3D tomographic phase data", type=np.ndarray)
 
     def evaluate(self):
-        self.phase.value = tomopy.retrieve_phase(
-            self.arr.value,
-            pixel_size=self.pixel_size.value,
-            dist=self.dist.value,
-            energy=self.energy.value,
-            alpha=self.alpha.value,
-            pad=self.pad.value,
-            ncore=self.ncore.value,
-            nchunk=self.nchunk.value)
+        # New dimensions and pad value after padding.
+        py, pz, val = _calc_pad(self.arr.value, self.pixel_size.value, self.dist.value, self.energy.value,
+                                self.pad.value)
+
+        # Compute the reciprocal grid.
+        dx, dy, dz = self.arr.value.shape
+        w2 = _reciprocal_grid(self.pixel_size.value, dy + 2 * py, dz + 2 * pz)
+
+        # Filter in Fourier space.
+        phase_filter = np.fft.fftshift(
+            _paganin_filter_factor(self.energy.value, self.dist.value, self.alpha.value, w2))
+
+        prj = np.full((dy + 2 * py, dz + 2 * pz), val, dtype='float32')
+        self.phase.value = self.arr.value.copy()
+        _retrieve_phase(self.phase.value,
+                        phase_filter,
+                        py,
+                        pz,
+                        prj,
+                        self.pad.value)

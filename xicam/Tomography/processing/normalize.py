@@ -11,15 +11,15 @@ class Normalize(ProcessingPlugin):
     Normalize raw 3D projection data with flats and darks
     """
 
-    tomo = Input(description="3D tomographic data", type=np.ndarray)
+    arr = Input(description="3D tomographic data", type=np.ndarray)
     flats = Input(description="3D flat field data", type=np.ndarray)
     darks = Input(description="3D dark field data", type=np.ndarray)
     
     normalized = Output(
         description="Normalized 3D tomographic data", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.normalized.value = tomopy.normalize(
-            self.tomo.value,
+            self.arr.value,
             self.flats.value,
             self.darks.value)
