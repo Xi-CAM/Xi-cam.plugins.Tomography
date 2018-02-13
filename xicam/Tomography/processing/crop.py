@@ -19,4 +19,4 @@ class Crop(ProcessingPlugin):
                 slc.append(slice(None))
             else:
                 slc.append(slice(int(pts.pop(0)), -int(pts.pop(0))))
-        return self.arr.value[slc]
+        self.croppedarr.value = self.arr.value[slc]

@@ -28,11 +28,11 @@ def test_tomoworkflow():
     read.flat.connect(norm.flats)
     read.dark.connect(norm.darks)
 
-    # outliers = RemoveOutlier()
-    # read.arr.connect(outliers.arr)
-    # outliers.dif.value = 500
-    # outliers.size.value = 5
-    #
+    outliers = RemoveOutlier()
+    norm.normalized.connect(outliers.arr)
+    outliers.dif.value = 500
+    outliers.size.value = 5
+
     # maximum = ArrayMax()
     # outliers.corrected.connect(maximum.arr)
     # maximum.floor.value = 1e-16
@@ -46,18 +46,18 @@ def test_tomoworkflow():
     # phase.dist.value=3
     # phase.energy.value=27
 
-    # stripe = RemoveStripeFw()
-    # phase.phase.connect(stripe.tomo)
-    # stripe.level.value = 8
-    # stripe.wname.value = 'db5'
-    # stripe.sigma.value = 4
-    # stripe.pad.value = True
+    stripe = RemoveStripeFw()
+    outliers.corrected.connect(stripe.tomo)
+    stripe.level.value = 8
+    stripe.wname.value = 'db5'
+    stripe.sigma.value = 4
+    stripe.pad.value = True
 
-    # padding = Pad()
-    # norm.normalized.connect(padding.arr)
-    # padding.axis.value = 2
-    # padding.npad.value = 448
-    # padding.mode.value = 'edge'
+    padding = Pad()
+    stripe.corrected.connect(padding.arr)
+    padding.axis.value = 2
+    padding.npad.value = 448
+    padding.mode.value = 'edge'
 
     # angles = Angles()
     # angles.nang.value=0
@@ -65,37 +65,47 @@ def test_tomoworkflow():
     # angles.ang2.value=180
 
 
-    # gridrec = Recon()
-    # padding.padded.connect(gridrec.tomo)
-    # read.angles.connect(gridrec.theta)
-    # gridrec.filter_name.value = 'butterworth'
-    # gridrec.algorithm.value = 'gridrec'
-    # gridrec.center.value = np.array([1295+448])#1295
-    # gridrec.filter_par.value = np.array([0.2,2])
-    # # gridrec.sinogram_order.value = True
+    gridrec = Recon()
+    padding.padded.connect(gridrec.tomo)
+    read.angles.connect(gridrec.theta)
+    gridrec.filter_name.value = 'butterworth'
+    gridrec.algorithm.value = 'gridrec'
+    gridrec.center.value = np.array([1295 + 448])  # 1295
+    gridrec.filter_par.value = np.array([0.2, 2])
+    # gridrec.sinogram_order.value = True
 
     crop = Crop()
+    gridrec.reconstructed.connect(crop.arr)
+    crop.p11.value = 448
+    crop.p22.value = 448
+    crop.p12.value = 448
+    crop.p21.value = 448
+    crop.axis.value = 0
 
     divide = ArrayDivide()
 
     circularmask = CircMask()
+    crop.croppedarr.connect(circularmask.arr)
+    circularmask.val.value = 0
+    circularmask.axis.value = 0
+    circularmask.ratio.value = 1
 
     writetiff = WriteTiffStack()
 
     workflow = Workflow('Tomography')
     for process in [read,
                     norm,
-                    # outliers,
+                    outliers,
                     # maximum,
                     # neglog,
                     # phase,
-                    # stripe,
-                    # padding,
+                    stripe,
+                    padding,
                     # angles,
-                    # gridrec,
-                    # crop,
+                    gridrec,
+                    crop,
                     # divide,
-                    # circularmask,
+                    circularmask,
                     # writetiff
                     ]:
         workflow.addProcess(process)
@@ -104,7 +114,7 @@ def test_tomoworkflow():
     result = dsk.execute(workflow)
     # print(result)
     import pyqtgraph as pg
-    pg.image(result['normalized'].squeeze())
+    pg.image(result[0]['circ_mask'].value.squeeze())
 
     from qtpy.QtWidgets import QApplication
     app = QApplication([])

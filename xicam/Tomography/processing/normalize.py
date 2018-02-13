@@ -19,6 +19,7 @@ class Normalize(ProcessingPlugin):
         description="Normalized 3D tomographic data", type=np.ndarray)
 
     def evaluate(self):
+        print('flat!', self.flats.value, 'dark!', self.darks.value)
         self.normalized.value = tomopy.normalize(
             self.arr.value,
             self.flats.value,
