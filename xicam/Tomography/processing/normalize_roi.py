@@ -25,6 +25,6 @@ class NormalizeRoi(ProcessingPlugin):
     normalized = Output(
         description="Normalized 3D tomographic data", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.normalized.value = tomopy.normalize_roi(
             self.arr.value, roi=self.roi.value, ncore=self.ncore.value)

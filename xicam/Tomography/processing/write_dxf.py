@@ -25,7 +25,7 @@ class WriteDxf(ProcessingPlugin):
         type=bool,
         default=False)
 
-    def evalulate(self):
+    def evaluate(self):
         dxchange.write_dxf(
             self.data.value,
             fname=self.fname.value,

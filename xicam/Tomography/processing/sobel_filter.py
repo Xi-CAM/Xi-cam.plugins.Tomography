@@ -18,6 +18,6 @@ class SobelFilter(ProcessingPlugin):
     filtered = Output(
         description="3D array of same shape as input", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.filtered.value = tomopy.sobel_filter(
             self.arr.value, axis=self.axis.value, ncore=self.ncore.value)

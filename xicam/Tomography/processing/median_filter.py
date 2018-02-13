@@ -23,7 +23,7 @@ class MedianFilter(ProcessingPlugin):
 
     filtered = Output(description="Median filtered 3D array", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.filtered.value = tomopy.median_filter(
             self.arr.value,
             size=self.size.value,

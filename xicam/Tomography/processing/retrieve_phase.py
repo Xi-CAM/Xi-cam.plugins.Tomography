@@ -29,7 +29,7 @@ class RetrievePhase(ProcessingPlugin):
     phase = Output(
         description="Approximated 3D tomographic phase data", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.phase.value = tomopy.retrieve_phase(
             self.arr.value,
             pixel_size=self.pixel_size.value,

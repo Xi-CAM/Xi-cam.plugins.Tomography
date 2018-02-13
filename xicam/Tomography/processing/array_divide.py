@@ -10,9 +10,9 @@ class ArrayDivide(ProcessingPlugin):
     Divide array by a scalar
     """
     arr = Input(description="Input array", type=np.ndarray)
-    div = Input(description="Divisor", type=scalar)
+    div = Input(description="Divisor", type=float)
 
     out = Output(description="Array divided by the scalar", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.out.value = np.divide(self.arr.value, self.div.value)

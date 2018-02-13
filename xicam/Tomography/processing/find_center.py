@@ -42,7 +42,7 @@ class FindCenter(ProcessingPlugin):
 
     center = Output(description="Rotation axis location", type=float)
 
-    def evalulate(self):
+    def evaluate(self):
         self.center.value = tomopy.find_center(
             self.tomo.value,
             self.theta.value,

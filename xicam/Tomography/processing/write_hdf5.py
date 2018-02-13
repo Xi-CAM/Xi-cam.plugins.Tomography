@@ -38,7 +38,7 @@ class WriteHdf5(ProcessingPlugin):
         type=int,
         default=None)
 
-    def evalulate(self):
+    def evaluate(self):
         dxchange.write_hdf5(
             self.data.value,
             fname=self.fname.value,

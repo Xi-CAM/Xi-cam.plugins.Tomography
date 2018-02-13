@@ -1,0 +1,10 @@
+
+[Core]
+Name = sobel_filter
+Module = sobel_filter.py
+
+[Documentation]
+Author = Ronald J. Pandolfi
+Version = 0.1.0
+Website = http://lotsofplugins.com
+Description = My first plugin

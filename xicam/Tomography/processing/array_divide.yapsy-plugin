@@ -1,0 +1,10 @@
+
+[Core]
+Name = array_divide
+Module = array_divide.py
+
+[Documentation]
+Author = Ronald J. Pandolfi
+Version = 0.1.0
+Website = http://lotsofplugins.com
+Description = My first plugin

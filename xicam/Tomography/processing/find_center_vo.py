@@ -32,7 +32,7 @@ class FindCenterVo(ProcessingPlugin):
 
     center = Output(description="Rotation axis location", type=float)
 
-    def evalulate(self):
+    def evaluate(self):
         self.center.value = tomopy.find_center_vo(
             self.tomo.value,
             ind=self.ind.value,

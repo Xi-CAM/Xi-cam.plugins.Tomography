@@ -22,6 +22,6 @@ class FindCenterPc(ProcessingPlugin):
 
     center = Output(description="Rotation axis location", type=float)
 
-    def evalulate(self):
+    def evaluate(self):
         self.center.value = tomopy.find_center_pc(
             self.proj1.value, self.proj2.value, tol=self.tol.value)

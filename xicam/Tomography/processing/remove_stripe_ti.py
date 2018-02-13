@@ -20,7 +20,7 @@ class RemoveStripeTi(ProcessingPlugin):
     corrected = Output(
         description="Corrected 3D tomographic data", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.corrected.value = tomopy.remove_stripe_ti(
             self.arr.value,
             nblock=self.nblock.value,

@@ -31,7 +31,7 @@ class GaussianFilter(ProcessingPlugin):
 
     filtered = Output(description="3D array", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.filtered.value = tomopy.gaussian_filter(
             self.arr.value,
             sigma=self.sigma.value,

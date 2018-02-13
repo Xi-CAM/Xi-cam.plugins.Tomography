@@ -17,6 +17,6 @@ class RemoveNan(ProcessingPlugin):
 
     out = Output(description="Corrected array", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.out.value = tomopy.remove_nan(
             self.arr.value, val=self.val.value, ncore=self.ncore.value)

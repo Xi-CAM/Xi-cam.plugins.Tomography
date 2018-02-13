@@ -20,6 +20,6 @@ class Downsample(ProcessingPlugin):
     downsample = Output(
         description="Downsampled 3D array in float32", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.downsample.value = tomopy.downsample(
             self.arr.value, level=self.level.value, axis=self.axis.value)

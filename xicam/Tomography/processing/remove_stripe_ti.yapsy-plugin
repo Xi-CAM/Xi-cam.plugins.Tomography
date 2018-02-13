@@ -1,0 +1,10 @@
+
+[Core]
+Name = remove_stripe_ti
+Module = remove_stripe_ti.py
+
+[Documentation]
+Author = Ronald J. Pandolfi
+Version = 0.1.0
+Website = http://lotsofplugins.com
+Description = My first plugin

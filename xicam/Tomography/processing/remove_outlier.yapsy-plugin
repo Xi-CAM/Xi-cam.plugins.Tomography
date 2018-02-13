@@ -1,0 +1,10 @@
+
+[Core]
+Name = remove_outlier
+Module = remove_outlier.py
+
+[Documentation]
+Author = Ronald J. Pandolfi
+Version = 0.1.0
+Website = http://lotsofplugins.com
+Description = My first plugin

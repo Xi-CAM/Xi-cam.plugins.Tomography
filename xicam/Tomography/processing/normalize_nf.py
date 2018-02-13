@@ -32,7 +32,7 @@ class NormalizeNf(ProcessingPlugin):
     normalized = Output(
         description="Normalized 3D tomographic data", type=np.ndarray)
 
-    def evalulate(self):
+    def evaluate(self):
         self.normalized.value = tomopy.normalize_nf(
             self.tomo.value,
             self.flats.value,

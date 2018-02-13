@@ -15,7 +15,7 @@ class WriteNpy(ProcessingPlugin):
     overwrite = Input(description="True or False", type=bool, default=False)
     dtype = Input(description="Self-descriptive", default=None)
 
-    def evalulate(self):
+    def evaluate(self):
         dxchange.write_npy(
             self.data.value,
             fname=self.fname.value,

@@ -1,0 +1,10 @@
+
+[Core]
+Name = find_center_vo
+Module = find_center_vo.py
+
+[Documentation]
+Author = Ronald J. Pandolfi
+Version = 0.1.0
+Website = http://lotsofplugins.com
+Description = My first plugin
