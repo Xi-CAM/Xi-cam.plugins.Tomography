@@ -11,7 +11,7 @@ class Recon(ProcessingPlugin):
     Reconstruct object from projection data.
     """
     tomo = Input(description="Input array", type=np.ndarray)
-    theta = Input(description="Projection angles in radians", type=np.ndarray)
+    angles = Input(description="Projection angles in radians", type=np.ndarray)
     center = Input(
         description="Location of rotation axis", type=np.ndarray, default=None)
 
@@ -87,7 +87,7 @@ class Recon(ProcessingPlugin):
 
         self.recon.value = tomopy.recon(
             self.tomo.value,
-            self.theta.value,
+            self.angles.value,
             center=self.center.value,
             sinogram_order=self.sinogram_order.value,
             algorithm=self.algorithm.value,
