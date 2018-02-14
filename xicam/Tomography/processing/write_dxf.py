@@ -10,7 +10,7 @@ class WriteDxf(ProcessingPlugin):
     """
     Write data to a data exchange hdf5 file
     """
-    data = Input(description="Data to be saved", type=np.ndarray)
+    recon = Input(description="Data to be saved", type=np.ndarray)
     fname = Input(
         description="File name to which the data is saved",
         type=str,
@@ -27,7 +27,7 @@ class WriteDxf(ProcessingPlugin):
 
     def evaluate(self):
         dxchange.write_dxf(
-            self.data.value,
+            self.recon.value,
             fname=self.fname.value,
             axes=self.axes.value,
             dtype=self.dtype.value,

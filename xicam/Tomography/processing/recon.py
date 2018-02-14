@@ -43,7 +43,7 @@ class Recon(ProcessingPlugin):
         type=str,
         default='none')
     filter_par = Input(
-        description="Filter parameters", type=list, default=None)
+        description="Filter parameters", type=np.ndarray, default=None)
 
     num_iter = Input(
         description="Number of algorithm iterations", type=int, default=None)

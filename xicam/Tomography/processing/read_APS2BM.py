@@ -13,8 +13,8 @@ class read_APS2BM(ProcessingPlugin):
     proj = Input(
         description=
         "Int or tuple-range of indices to read",
-        type=int)
-    sino = Input(description="Int or tuple-range of indices to read sinograms", type=int)
+        type=tuple)
+    sino = Input(description="Int or tuple-range of indices to read sinograms", type=tuple)
 
     arr = Output(
         description=

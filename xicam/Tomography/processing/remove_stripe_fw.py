@@ -30,15 +30,13 @@ class RemoveStripeFw(ProcessingPlugin):
     # nchunk = Input(
     #     description="Chunk size for each core", type=int, default=None)
 
-    corrected = Output(
-        description="Corrected 3D tomographic data", type=np.ndarray)
-
-    if level is None:
-        size = np.max(tomo.value.shape)
-        level = int(np.ceil(np.log2(size)))
 
     def evaluate(self):
-        self.corrected.value = self.tomo.value.copy()
+        if self.level.value is None:
+            size = np.max(self.tomo.value.shape)
+            self.level.value = int(np.ceil(np.log2(size)))
+
+        self.tomo.value = self.tomo.value.copy()
         stripe._remove_stripe_fw(
             self.corrected.value,
             level=self.level.value,

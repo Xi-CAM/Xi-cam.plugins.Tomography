@@ -7,8 +7,7 @@ import numpy as np
 
 
 class WriteTiffStack(ProcessingPlugin):
-
-    data = Input(description="Data to be saved", type=np.ndarray)
+    recon = Input(description="Data to be saved", type=np.ndarray)
     fname = Input(description="", type=str, default='/tmp/data.tiff')
     dtype = Input(description="Data-type", default=None)
     axis = Input(

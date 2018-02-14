@@ -10,7 +10,7 @@ class Upsample(ProcessingPlugin):
     """
     Upsample along specified axis of a 3D array
     """
-    arr = Input(description="3D input array", type=np.ndarray)
+    tomo = InOut(description="3D input array", type=np.ndarray)
     level = Input(
         description="Upsampling level in powers of two", type=int, default=1)
     axis = Input(
@@ -18,9 +18,6 @@ class Upsample(ProcessingPlugin):
         type=int,
         default=2)
 
-    upsampled = Output(
-        description="psampled 3D array in float32", type=np.ndarray)
-
     def evaluate(self):
-        self.upsampled.value = tomopy.upsample(
-            self.arr.value, level=self.level.value, axis=self.axis.value)
+        self.tomo.value = tomopy.upsample(
+            self.tomo.value, level=self.level.value, axis=self.axis.value)

@@ -10,7 +10,7 @@ class WriteHdf5(ProcessingPlugin):
     """
     Write data to hdf5 file in a specific group
     """
-    data = Input(description="Array data to be saved", type=np.ndarray)
+    recon = Input(description="Array data to be saved", type=np.ndarray)
     fname = Input(
         description="File name to which the data is saved",
         type=str,
@@ -40,7 +40,7 @@ class WriteHdf5(ProcessingPlugin):
 
     def evaluate(self):
         dxchange.write_hdf5(
-            self.data.value,
+            self.recon.value,
             fname=self.fname.value,
             gname=self.gname.value,
             dname=self.dname.value,
