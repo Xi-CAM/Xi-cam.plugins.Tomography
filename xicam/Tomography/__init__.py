@@ -46,7 +46,7 @@ class TomographyPlugin(GUIPlugin):
         self.stages = {
             'Alignment': GUILayout(QLabel('Alignment'), right=self.workfloweditor, top=self.tomotoolbar),
             'Preprocess': GUILayout(self.rawtabview, right=self.workfloweditor, top=self.tomotoolbar),
-            'Reconstruct': GUILayout(self.recontabs, top=self.tomotoolbar),
+            'Reconstruct': GUILayout(self.recontabs, top=self.tomotoolbar, right=self.workfloweditor),
         }
         super(TomographyPlugin, self).__init__()
 
