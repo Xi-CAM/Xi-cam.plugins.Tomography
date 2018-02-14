@@ -24,4 +24,4 @@ class NormalizeRoi(ProcessingPlugin):
 
     def evaluate(self):
         self.tomo.value = tomopy.normalize_roi(
-            self.arr.value, roi=self.roi.value, ncore=self.ncore.value)
+            self.tomo.value, roi=self.roi.value, ncore=self.ncore.value)
