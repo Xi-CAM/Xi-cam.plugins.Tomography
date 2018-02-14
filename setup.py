@@ -55,7 +55,8 @@ setup(
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    packages=['xicam.Tomography', 'xicam.Tomography.processing', 'xicam.Tomography.widgets'],
+    packages=['xicam.Tomography', 'xicam.Tomography.processing', 'xicam.Tomography.widgets',
+              'xicam.Tomography.workflows', 'xicam.Tomography.formats'],
 
     package_dir={},
 
