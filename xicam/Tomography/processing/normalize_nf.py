@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from xicam.plugins import ProcessingPlugin, Input, Output
+from xicam.plugins import ProcessingPlugin, Input, InOut
 import tomopy
 import numpy as np
 
@@ -13,7 +13,7 @@ class NormalizeNf(ProcessingPlugin):
     nearest set of flat fields (nearest flat fields).
     """
 
-    tomo = Input(description="3D tomographic data", type=np.ndarray)
+    tomo = InOut(description="3D tomographic data", type=np.ndarray)
     flats = Input(description="3D flat field data", type=np.ndarray)
     darks = Input(description="3D dark field data", type=np.ndarray)
     flat_loc = Input(
@@ -29,11 +29,8 @@ class NormalizeNf(ProcessingPlugin):
         type=np.ndarray,
         default=None)
 
-    normalized = Output(
-        description="Normalized 3D tomographic data", type=np.ndarray)
-
     def evaluate(self):
-        self.normalized.value = tomopy.normalize_nf(
+        self.tomo.value = tomopy.normalize_nf(
             self.tomo.value,
             self.flats.value,
             self.darks.value,

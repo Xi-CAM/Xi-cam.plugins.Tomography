@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from xicam.plugins import ProcessingPlugin, Input, Output
+from xicam.plugins import ProcessingPlugin, Input, InOut
 from tomopy.prep.phase import _retrieve_phase, _calc_pad, _reciprocal_grid, _paganin_filter_factor
 import numpy as np
 

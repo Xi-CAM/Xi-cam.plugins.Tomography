@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from xicam.plugins import ProcessingPlugin, Input, Output
+from xicam.plugins import ProcessingPlugin, Input, InOut
 import tomopy
 import numpy as np
 
@@ -11,7 +11,7 @@ class NormalizeRoi(ProcessingPlugin):
     Normalize raw projection data using an average of a selected window
     on projection images.
     """
-    arr = Input(description="3D tomographic data", type=np.ndarray)
+    tomo = InOut(description="3D tomographic data", type=np.ndarray)
     roi = Input(
         description=
         "[top-left, top-right, bottom-left, bottom-right] pixel coordinates",
@@ -22,9 +22,6 @@ class NormalizeRoi(ProcessingPlugin):
         type=int,
         default=None)
 
-    normalized = Output(
-        description="Normalized 3D tomographic data", type=np.ndarray)
-
     def evaluate(self):
-        self.normalized.value = tomopy.normalize_roi(
+        self.tomo.value = tomopy.normalize_roi(
             self.arr.value, roi=self.roi.value, ncore=self.ncore.value)

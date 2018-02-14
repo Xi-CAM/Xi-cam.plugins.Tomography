@@ -1,14 +1,13 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from xicam.plugins import ProcessingPlugin, Input, Output
+from xicam.plugins import ProcessingPlugin, Input, InOut
 import tomopy
 import numpy as np
 
 
 class Pad(ProcessingPlugin):
-
-    arr = Input(description="Input array", type=np.ndarray)
+    tomo = InOut(description="Input array", type=np.ndarray)
     axis = Input(
         description="Axis along which padding will be performed", type=int)
     npad = Input(
@@ -19,11 +18,9 @@ class Pad(ProcessingPlugin):
         type=int,
         default=None)
 
-    padded = Output(description="Padded 3D array", type=np.ndarray)
-
     def evaluate(self):
-        self.padded.value = tomopy.pad(
-            self.arr.value,
+        self.tomo.value = tomopy.pad(
+            self.tomo.value,
             self.axis.value,
             npad=self.npad.value,
             mode=self.mode.value,

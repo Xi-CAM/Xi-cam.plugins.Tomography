@@ -63,7 +63,7 @@ class Recon(ProcessingPlugin):
         type=float,
         default=None)
 
-    reconstructed = Output(
+    recon = Output(
         description="Reconstructed 3D array", type=np.ndarray)
 
     def evaluate(self):
@@ -85,7 +85,7 @@ class Recon(ProcessingPlugin):
         # remove unset kwargs
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
-        self.reconstructed.value = tomopy.recon(
+        self.recon.value = tomopy.recon(
             self.tomo.value,
             self.theta.value,
             center=self.center.value,
