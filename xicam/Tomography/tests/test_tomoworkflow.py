@@ -18,6 +18,7 @@ from xicam.Tomography.processing.write_tiff_stack import WriteTiffStack
 import tomopy
 import numpy as np
 
+
 def test_tomoworkflow():
     read = read_APS2BM()
     read.path.value = '/home/rp/data/tomography/DogaTest.hdf'
@@ -114,7 +115,7 @@ def test_tomoworkflow():
     result = dsk.execute(workflow)
     # print(result)
     import pyqtgraph as pg
-    pg.image(result[0]['circ_mask'].value.squeeze())
+    pg.image(result[0]['normalized'].value.squeeze())
 
     from qtpy.QtWidgets import QApplication
     app = QApplication([])
