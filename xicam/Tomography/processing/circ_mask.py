@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from xicam.plugins import ProcessingPlugin, Input, Output
+from xicam.plugins import ProcessingPlugin, Input, InOut
 import tomopy
 import numpy as np
 
@@ -11,7 +11,7 @@ class CircMask(ProcessingPlugin):
     Apply circular mask to a 3D array.
     """
 
-    arr = Input(description="Arbitrary 3D array", type=np.ndarray)
+    recon = InOut(description="Arbitrary 3D array", type=np.ndarray)
     axis = Input(
         description="Axis along which mask will be performed", type=int)
     ratio = Input(
@@ -22,11 +22,9 @@ class CircMask(ProcessingPlugin):
     val = Input(
         description="Value for the masked region", default=0., type=int)
 
-    circ_mask = Output(description="Masked array", type=np.ndarray)
-
     def evaluate(self):
-        self.circ_mask.value = tomopy.circ_mask(
-            self.arr.value,
+        self.recon.value = tomopy.circ_mask(
+            self.recon.value,
             self.axis.value,
             ratio=self.ratio.value,
             val=self.val.value)

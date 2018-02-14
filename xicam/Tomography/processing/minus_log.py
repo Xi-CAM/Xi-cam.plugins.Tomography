@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from xicam.plugins import ProcessingPlugin, Input, Output
+from xicam.plugins import ProcessingPlugin, Input, InOut
 import tomopy
 import numpy as np
 
@@ -11,7 +11,7 @@ class MinusLog(ProcessingPlugin):
     Computation of the minus log of a given array
     """
 
-    arr = Input(description="3D stack of projections", type=np.ndarray)
+    tomo = Input(description="3D stack of projections", type=np.ndarray)
     ncore = Input(
         description="Number of cores that will be assigned to jobs.",
         type=int,
@@ -22,9 +22,6 @@ class MinusLog(ProcessingPlugin):
         type=np.ndarray,
         default=None)
 
-    minuslog = Output(
-        description="Minus-log of the input data", type=np.ndarray)
-
     def evaluate(self):
-        self.minuslog.value = tomopy.minus_log(
-            self.arr.value, ncore=self.ncore.value, out=self.out.value)
+        self.tomo.value = tomopy.minus_log(
+            self.tomo.value, ncore=self.ncore.value, out=self.out.value)

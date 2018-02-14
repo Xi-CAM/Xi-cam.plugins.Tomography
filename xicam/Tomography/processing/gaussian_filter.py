@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from xicam.plugins import ProcessingPlugin, Input, Output
+from xicam.plugins import ProcessingPlugin, Input, InOut
 import tomopy
 import numpy as np
 
@@ -11,7 +11,7 @@ class GaussianFilter(ProcessingPlugin):
     Apply Gaussian filter to 3D array along specified axis.
     TODO: Make simga to an optional sequence
     """
-    arr = Input(description="Input array", type=np.ndarray)
+    tomo = InOut(description="Input array", type=np.ndarray)
     sigma = Input(
         description="Standard deviation for Gaussian kernel",
         type=float,
@@ -29,11 +29,9 @@ class GaussianFilter(ProcessingPlugin):
         type=int,
         default=None)
 
-    filtered = Output(description="3D array", type=np.ndarray)
-
     def evaluate(self):
-        self.filtered.value = tomopy.gaussian_filter(
-            self.arr.value,
+        self.tomo.value = tomopy.gaussian_filter(
+            self.tomo.value,
             sigma=self.sigma.value,
             order=self.order.value,
             axis=self.axis.value,

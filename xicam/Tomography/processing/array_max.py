@@ -1,22 +1,19 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from xicam.plugins import ProcessingPlugin, Input, Output
+from xicam.plugins import ProcessingPlugin, Input, InOut
 import numpy as np
 
 
 class ArrayMax(ProcessingPlugin):
     """
-    Maximum value of the array
+    Maximum value of the tomoay
     """
-    arr = Input(description="Input array", type=np.ndarray)
+    tomo = InOut(description="Input tomogram", type=np.ndarray)
     floor = Input(
         description="Floor value for comparison",
         type=float,
         default=0)
-    out = Output(
-        description="Alternative output array in which to place the result",
-        type=np.ndarray)
 
     def evaluate(self):
-        self.out.value = np.maximum(self.arr.value, self.floor.value)
+        self.tomo.value = np.maximum(self.tomo.value, self.floor.value)

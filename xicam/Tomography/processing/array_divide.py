@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from xicam.plugins import ProcessingPlugin, Input, Output
+from xicam.plugins import ProcessingPlugin, Input, InOut
 import numpy as np
 
 
@@ -9,10 +9,8 @@ class ArrayDivide(ProcessingPlugin):
     """
     Divide array by a scalar
     """
-    arr = Input(description="Input array", type=np.ndarray)
+    tomo = InOut(description="Input array", type=np.ndarray)
     div = Input(description="Divisor", type=float)
 
-    out = Output(description="Array divided by the scalar", type=np.ndarray)
-
     def evaluate(self):
-        self.out.value = np.divide(self.arr.value, self.div.value)
+        self.tomo.value = np.divide(self.tomo.value, self.div.value)

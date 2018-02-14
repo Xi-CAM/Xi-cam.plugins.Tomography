@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from xicam.plugins import ProcessingPlugin, Input, Output
+from xicam.plugins import ProcessingPlugin, Input, InOut
 import tomopy
 import numpy as np
 
@@ -10,16 +10,14 @@ class Downsample(ProcessingPlugin):
     """
     Downsample along specified axis of a 3D array.
     """
-    arr = Input(description="3D input array", type=np.ndarray)
+    tomo = InOut(description="3D input array", type=np.ndarray)
+    recon = tomo
     level = Input(description="Downsampling level in powers of two", type=int, default = 1)
     axis = Input(
         description="Axis along which downsampling will be performed",
         default = 2,
         type=int)
 
-    downsample = Output(
-        description="Downsampled 3D array in float32", type=np.ndarray)
-
     def evaluate(self):
-        self.downsample.value = tomopy.downsample(
-            self.arr.value, level=self.level.value, axis=self.axis.value)
+        self.tomo.value = tomopy.downsample(
+            self.tomo.value, level=self.level.value, axis=self.axis.value)

@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from xicam.plugins import ProcessingPlugin, Input, Output
+from xicam.plugins import ProcessingPlugin, Input, InOut
 import tomopy
 import numpy as np
 
@@ -15,7 +15,7 @@ class NormalizeBg(ProcessingPlugin):
     and all intermediate values are scaled linearly.
     """
 
-    tomo = Input(description="3D tomographic data", type=np.ndarray)
+    tomo = InOut(description="3D tomographic data", type=np.ndarray)
     air = Input(
         description=
         "Number of pixels at each boundary to calculate the scaling factor",
@@ -28,11 +28,8 @@ class NormalizeBg(ProcessingPlugin):
     nchunk = Input(
         description="Chunk size for each core", type=int, default=None)
 
-    corrected = Output(
-        description="Corrected 3D tomographic data", type=np.ndarray)
-
     def evaluate(self):
-        self.corrected.value = tomopy.normalize_bg(
+        self.tomo.value = tomopy.normalize_bg(
             self.tomo.value,
             air=self.air.value,
             ncore=self.ncore.value,
