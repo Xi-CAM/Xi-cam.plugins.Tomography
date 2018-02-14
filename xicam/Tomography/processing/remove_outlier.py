@@ -23,7 +23,7 @@ class RemoveOutlier(ProcessingPlugin):
 
 
     def evaluate(self):
-        tomopy.remove_outlier(
+        self.tomo.value = tomopy.remove_outlier(
             self.tomo.value,
             self.dif.value,
             size=self.size.value,
