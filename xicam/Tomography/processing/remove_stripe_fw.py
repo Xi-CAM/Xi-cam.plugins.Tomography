@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from xicam.plugins import ProcessingPlugin, Input, Output
+from xicam.plugins import ProcessingPlugin, Input, InOut
 import tomopy
 import numpy as np
 from tomopy.prep import stripe
@@ -11,7 +11,7 @@ class RemoveStripeFw(ProcessingPlugin):
     """
     Remove horizontal stripes from sinogram using the Fourier-Wavelet (FW) based method :cite:`Munch:09`.
     """
-    tomo = Input(description="3D tomographic data", type=np.ndarray)
+    tomo = InOut(description="3D tomographic data", type=np.ndarray)
     level = Input(
         description="Number of discrete wavelet transform levels",
         type=int,
@@ -38,7 +38,7 @@ class RemoveStripeFw(ProcessingPlugin):
 
         self.tomo.value = self.tomo.value.copy()
         stripe._remove_stripe_fw(
-            self.corrected.value,
+            self.tomo.value,
             level=self.level.value,
             wname=self.wname.value,
             sigma=self.sigma.value,

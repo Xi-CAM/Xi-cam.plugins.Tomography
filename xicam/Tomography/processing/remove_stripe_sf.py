@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from xicam.plugins import ProcessingPlugin, Input, Output
+from xicam.plugins import ProcessingPlugin, Input, InOut
 import tomopy
 import numpy as np
 
@@ -10,7 +10,7 @@ class RemoveStripeSf(ProcessingPlugin):
     """
     Normalize raw projection data using a smoothing filter approach
     """
-    tomo = Input(description="3D tomographic data", type=np.ndarray)
+    tomo = InOut(description="3D tomographic data", type=np.ndarray)
     size = Input(
         description="Size of the smoothing filter", type=int, default=5)
     ncore = Input(description="Number of CPU cores", type=int, default=None)

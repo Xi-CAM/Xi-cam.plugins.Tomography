@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from xicam.plugins import ProcessingPlugin, Input, Output
+from xicam.plugins import ProcessingPlugin, Input, InOut
 import tomopy
 import numpy as np
 
@@ -11,7 +11,7 @@ class RemoveRing(ProcessingPlugin):
     Remove ring artifacts from images in the reconstructed domain.
     Descriptions of parameters need to be more clear for sure.
     """
-    arr = Input(description="Array of reconstruction data", type=np.ndarray)
+    recon = InOut(description="Array of reconstruction data", type=np.ndarray)
     center_x = Input(
         description="abscissa location of center of rotation",
         type=float,
@@ -45,18 +45,10 @@ class RemoveRing(ProcessingPlugin):
     ncore = Input(description="Number or CPU cores", type=int, default=None)
     nchunk = Input(
         description="Chunk size for each core", type=int, default=None)
-    out = Input(
-        description=
-        "Output array for result. If same as arr, process will be done in-place",
-        type=np.ndarray,
-        default=None)
-
-    corrected = Output(
-        description="Corrected reconstruction data", type=np.ndarray)
 
     def evaluate(self):
-        self.corrected.value = tomopy.remove_ring(
-            self.arr.value,
+        self.recon.value = tomopy.remove_ring(
+            self.recon.value,
             center_x=self.center_x.value,
             center_y=self.center_y.value,
             thresh=self.thresh.value,
@@ -67,4 +59,4 @@ class RemoveRing(ProcessingPlugin):
             int_mode=self.int_mode.value,
             ncore=self.ncore.value,
             nchunk=self.nchunk.value,
-            out=self.out.value)
+            out=self.recon.value)

@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from xicam.plugins import ProcessingPlugin, Input, Output
+from xicam.plugins import ProcessingPlugin, Input, InOut
 import tomopy
 import numpy as np
 
@@ -10,7 +10,7 @@ class RemoveStripeTi(ProcessingPlugin):
     """
     Remove horizontal stripes from sinogram using Titarenko's approach :cite:`Miqueles:14`.
     """
-    tomo = Input(description="3D tomographic data", type=np.ndarray)
+    tomo = InOut(description="3D tomographic data", type=np.ndarray)
     nblock = Input(description="Number of blocks", type=int, default=0)
     alpha = Input(description="Damping factor", type=float, default=1.5)
     ncore = Input(description="Number of CPU cores", type=int, default=None)
