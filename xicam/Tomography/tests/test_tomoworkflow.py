@@ -21,7 +21,7 @@ import numpy as np
 
 def test_tomoworkflow():
     read = read_APS2BM()
-    read.path.value = '/home/rp/data/tomography/DogaTest.hdf'
+    read.path.value = '/Users/hari/test.hdf'
     read.sino.value = (1050, 1051)
 
     norm = Normalize()
@@ -113,7 +113,8 @@ def test_tomoworkflow():
 
     dsk = DaskExecutor()
     result = dsk.execute(workflow)
-    # print(result)
+    print(result)
+
     import pyqtgraph as pg
     pg.image(result[0]['normalized'].value.squeeze())
 
