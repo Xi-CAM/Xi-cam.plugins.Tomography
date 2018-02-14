@@ -27,12 +27,12 @@ class Workflow(Workflow):
         read.sino.value = (1050, 1051)
 
         norm = Normalize()
-        read.arr.connect(norm.arr)
-        read.flat.connect(norm.flats)
-        read.dark.connect(norm.darks)
+        # read.tomo.connect(norm.tomo)
+        # read.flats.connect(norm.flats)
+        # read.dark.connect(norm.darks)
 
         outliers = RemoveOutlier()
-        norm.normalized.connect(outliers.arr)
+        # norm.normalized.connect(outliers.arr)
         outliers.dif.value = 500
         outliers.size.value = 5
 
@@ -50,14 +50,14 @@ class Workflow(Workflow):
         # phase.energy.value=27
 
         stripe = RemoveStripeFw()
-        outliers.corrected.connect(stripe.tomo)
+        # outliers.corrected.connect(stripe.tomo)
         stripe.level.value = 8
         stripe.wname.value = 'db5'
         stripe.sigma.value = 4
         stripe.pad.value = True
 
         padding = Pad()
-        stripe.corrected.connect(padding.arr)
+        # stripe.corrected.connect(padding.arr)
         padding.axis.value = 2
         padding.npad.value = 448
         padding.mode.value = 'edge'
@@ -69,8 +69,8 @@ class Workflow(Workflow):
 
 
         gridrec = Recon()
-        padding.padded.connect(gridrec.tomo)
-        read.angles.connect(gridrec.theta)
+        # padding.padded.connect(gridrec.tomo)
+        # read.angles.connect(gridrec.theta)
         gridrec.filter_name.value = 'butterworth'
         gridrec.algorithm.value = 'gridrec'
         gridrec.center.value = np.array([1295 + 448])  # 1295
@@ -78,7 +78,7 @@ class Workflow(Workflow):
         # gridrec.sinogram_order.value = True
 
         crop = Crop()
-        gridrec.reconstructed.connect(crop.arr)
+        # gridrec.reconstructed.connect(crop.arr)
         crop.p11.value = 448
         crop.p22.value = 448
         crop.p12.value = 448
@@ -88,7 +88,7 @@ class Workflow(Workflow):
         divide = ArrayDivide()
 
         circularmask = CircMask()
-        crop.croppedarr.connect(circularmask.arr)
+        # crop.croppedarr.connect(circularmask.arr)
         circularmask.val.value = 0
         circularmask.axis.value = 0
         circularmask.ratio.value = 1
@@ -111,3 +111,5 @@ class Workflow(Workflow):
                         # writetiff
                         ]:
             self.addProcess(process)
+
+        self.autoConnectAll()
