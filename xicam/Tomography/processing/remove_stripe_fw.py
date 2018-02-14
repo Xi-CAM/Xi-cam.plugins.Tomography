@@ -36,7 +36,6 @@ class RemoveStripeFw(ProcessingPlugin):
             size = np.max(self.tomo.value.shape)
             self.level.value = int(np.ceil(np.log2(size)))
 
-        self.tomo.value = self.tomo.value.copy()
         stripe._remove_stripe_fw(
             self.tomo.value,
             level=self.level.value,
