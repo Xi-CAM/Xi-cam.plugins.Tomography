@@ -11,7 +11,7 @@ class MinusLog(ProcessingPlugin):
     Computation of the minus log of a given array
     """
 
-    tomo = Input(description="3D stack of projections", type=np.ndarray)
+    tomo = InOut(description="3D stack of projections", type=np.ndarray)
     ncore = Input(
         description="Number of cores that will be assigned to jobs.",
         type=int,
