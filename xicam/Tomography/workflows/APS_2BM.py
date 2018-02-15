@@ -23,7 +23,6 @@ class Workflow(Workflow):
     def __init__(self):
         super(Workflow, self).__init__('APS-2BM')
         read = read_APS2BM()
-        read.path.value = '/home/rp/data/tomography/DogaTest.hdf'
         read.sino.value = (1050, 1051)
 
         norm = Normalize()

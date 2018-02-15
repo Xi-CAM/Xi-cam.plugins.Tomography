@@ -59,13 +59,26 @@ class TomographyPlugin(GUIPlugin):
     def sliceReconstruct(self):
         msg.showBusy()
         msg.showMessage('Running slice reconstruction...', level=msg.INFO)
-        self._reconthread = QThreadFuture(self.workflow.execute, (None,),
-                                          callback_slot=partial(self.showReconstruction, mode=self.slice))
-        self._reconthread.start()
+        for process in self.workflow.processes:
+            for name in process.inputs:
+                if name == 'path':
+                    process.inputs[name].value = self.headermodel.item(self.rawtabview.currentIndex()).header.startdoc[
+                        'path']
+        _reconthread = QThreadFuture(self.workflow.execute, (None,),
+                                     callback_slot=partial(self.showReconstruction, mode=self.slice),
+                                     except_slot=self.exceptionCallback)
+        _reconthread.start()
+
+    def exceptionCallback(self, ex):
+        msg.notifyMessage("Reconstruction failed;\n see log for error")
+        msg.showMessage("Reconstruction failed; see log for error")
+        msg.logError(ex)
+        msg.showReady()
 
     def showReconstruction(self, result, mode):
+        msg.notifyMessage('Reconstruction complete!')
         if mode == self.slice:
             sliceviewer = SliceViewer()
-            sliceviewer.setImage(list(result[0].values())[0].value)
+            sliceviewer.setImage(list(result[0].values())[0].value.squeeze())
             self.recontabs.addTab(sliceviewer, '????')
         msg.showReady()
