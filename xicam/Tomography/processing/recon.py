@@ -21,7 +21,7 @@ class Recon(ProcessingPlugin):
         default=False)
 
     algorithm = Input(
-        description="[art, bart, fbp, gridrec, etc.]", type=str, default=None)
+        description="[art, bart, fbp, gridrec, etc.]", type=str, default='gridrec')
     init_recon = Input(
         description="Initial guess of the reconstruction",
         type=np.ndarray,
