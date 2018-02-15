@@ -72,8 +72,8 @@ class APS2BM(DataHandlerPlugin):
             return h5['exchange']['data_dark'].shape[0]
 
     @classmethod
-    def getStartDoc(cls, paths, start_uid):
-        return start_doc(start_uid=start_uid)
+    def getStartDoc(cls, path, start_uid):
+        return start_doc(start_uid=start_uid, metadata={'path': path})
 
     @classmethod
     def getDescriptorDocs(cls, paths, start_uid, descriptor_uid):
