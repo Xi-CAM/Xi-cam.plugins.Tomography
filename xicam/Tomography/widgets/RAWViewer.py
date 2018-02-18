@@ -11,6 +11,7 @@ from xicam.gui.widgets.dynimageview import DynImageView
 class RAWViewer(DynImageView, QWidgetPlugin):
     def __init__(self, header, field):
         super(RAWViewer, self).__init__()
+        self.setPredefinedGradient('grey')
 
         self.setHeader(header, field)
 
