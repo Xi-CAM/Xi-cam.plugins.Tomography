@@ -8,8 +8,8 @@ import numpy as np
 
 class WriteTiffStack(ProcessingPlugin):
     recon = Input(description="Data to be saved", type=np.ndarray)
-    fname = Input(description="", type=str, default='/tmp/data.tiff')
-    dtype = Input(description="Data-type", default=None)
+    fname = Input(description="Filename", type=str, default='/tmp/data.tiff')
+    dtype = Input(description="Data-type", default=None, type=type)
     axis = Input(
         description="Axis along which stacking is done", type=int, default=0)
     start = Input(description="First index of the file", type=int, default=0)
@@ -19,7 +19,7 @@ class WriteTiffStack(ProcessingPlugin):
 
     def evaluate(self):
         dxchange.write_tiff_stack(
-            self.data.value,
+            self.recon.value,
             fname=self.fname.value,
             dtype=self.dtype.value,
             axis=self.axis.value,

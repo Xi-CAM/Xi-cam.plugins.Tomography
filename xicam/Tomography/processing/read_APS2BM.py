@@ -10,11 +10,8 @@ class read_APS2BM(ProcessingPlugin):
     filtering along the other dimensions.
     """
     path = Input(description="Path to file", type=str)
-    proj = Input(
-        description=
-        "Int or tuple-range of indices to read",
-        type=tuple)
-    sino = Input(description="Int or tuple-range of indices to read sinograms", type=tuple)
+    chunksize = Input(description="Number of sinograms to read simultaneously", type=int, default=1)
+    sinoindex = Input(description="Index of (first) sinogram to read", type=int)
 
     tomo = Output(
         description=
@@ -26,5 +23,10 @@ class read_APS2BM(ProcessingPlugin):
 
     def evaluate(self):
         self.tomo.value, self.flats.value, self.darks.value, self.angles.value = dxchange.read_aps_2bm(self.path.value,
-                                                                                                       self.proj.value,
-                                                                                                       self.sino.value)
+                                                                                                       None,
+                                                                                                       (
+                                                                                                           self.sinoindex.value,
+                                                                                                           int(
+                                                                                                               self.sinoindex.value) + int(
+                                                                                                               self.chunksize.value),
+                                                                                                           1))

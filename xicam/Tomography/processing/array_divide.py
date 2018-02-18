@@ -9,8 +9,8 @@ class ArrayDivide(ProcessingPlugin):
     """
     Divide array by a scalar
     """
-    tomo = InOut(description="Input array", type=np.ndarray)
+    recon = InOut(description="Input array", type=np.ndarray)
     div = Input(description="Divisor", type=float)
 
     def evaluate(self):
-        self.tomo.value = np.divide(self.tomo.value, self.div.value)
+        self.recon.value = np.divide(self.recon.value, self.div.value)

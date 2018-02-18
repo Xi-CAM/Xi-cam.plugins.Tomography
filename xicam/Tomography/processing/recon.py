@@ -13,10 +13,10 @@ class Recon(ProcessingPlugin):
     tomo = Input(description="Input array", type=np.ndarray)
     angles = Input(description="Projection angles in radians", type=np.ndarray)
     center = Input(
-        description="Location of rotation axis", type=np.ndarray, default=None)
+        description="Location of rotation axis", type=int, default=None)
 
     sinogram_order = Input(
-        description="Determins whether data is a stack of sinograms",
+        description="Determines whether data is a stack of sinograms",
         type=bool,
         default=False)
 
