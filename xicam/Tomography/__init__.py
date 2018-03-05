@@ -6,7 +6,7 @@ from qtpy.QtWidgets import *
 
 from xicam.core.data import load_header, NonDBHeader
 from xicam.core.execution.workflow import Workflow
-from xicam.core.execution.daskexecutor import DaskExecutor
+from xicam.core.execution.camlinkexecutor import CamLinkExecutor
 from xicam.core import msg
 import distributed
 
@@ -120,6 +120,7 @@ class TomographyPlugin(GUIPlugin):
         msg.showReady()
 
     def showReconstruction(self, result, mode):
+        print('result:', result)
         if mode == self.slice:
             sliceviewer = SliceViewer()
             sliceviewer.setImage(list(result.values())[0].value.squeeze())

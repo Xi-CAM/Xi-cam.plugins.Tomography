@@ -177,9 +177,9 @@ class VolumeVisual(scene.visuals.Volume):
         self._clim = vol.min(), vol.max()  # NOTE: THIS IS MODIFIED BY RP TO RESET MIN/MAX EACH TIME
 
         # Apply clim
-        vol = np.array(vol, dtype='float32', copy=True)
-        vol -= self._clim[0]
-        vol *= 1. / (self._clim[1] - self._clim[0])
+        vol = np.array(vol, dtype='float32', copy=False)
+        # vol -= self._clim[0]
+        # vol *= 1. / (self._clim[1] - self._clim[0])
 
         # Apply to texture
         self._tex.set_data(vol)  # will be efficient if vol is same shape
