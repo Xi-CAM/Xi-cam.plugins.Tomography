@@ -4,6 +4,7 @@
 from xicam.plugins import ProcessingPlugin, Input, Output
 import tomopy
 import numpy as np
+from typing import List
 
 
 class Recon(ProcessingPlugin):
@@ -11,7 +12,7 @@ class Recon(ProcessingPlugin):
     Reconstruct object from projection data.
     """
     tomo = Input(description="Input array", type=np.ndarray)
-    angles = Input(description="Projection angles in radians", type=np.ndarray)
+    angles = Input(description="Projection angles in radians", type=List[float])
     center = Input(
         description="Location of rotation axis", type=int, default=None)
 

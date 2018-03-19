@@ -72,10 +72,9 @@ class TomographyPlugin(GUIPlugin):
                         process.inputs[name].value = \
                         self.headermodel.item(self.rawtabview.currentIndex()).header.startdoc[
                             'path']
-            _reconthread = QThreadFuture(self.workflow.execute, (None,),
-                                         callback_slot=partial(self.showReconstruction, mode=self.slice),
-                                         except_slot=self.exceptionCallback)
-            _reconthread.start()
+            self.workflow.execute(None, threadkey='slicereconstruct',
+                                  callback_slot=partial(self.showReconstruction, mode=self.slice),
+                                  except_slot=self.exceptionCallback)
         except Exception as ex:
             msg.logError(ex)
             msg.showReady()
