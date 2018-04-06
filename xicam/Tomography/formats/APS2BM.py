@@ -40,7 +40,7 @@ class APS2BM(DataHandlerPlugin):
     @classmethod
     def getEventDocs(cls, path, descriptor_uid):
         for proj_index in range(cls.num_projections(path)):
-            yield embedded_local_event_doc(descriptor_uid, 'projection', cls, (path, 'data', proj_index))
+            yield embedded_local_event_doc(descriptor_uid, 'primary', cls, (path, 'data', proj_index))
 
         for sino_index in range(cls.num_sinograms(path)):
             yield embedded_local_event_doc(descriptor_uid, 'sinogram', cls, (path, 'sino', sino_index))

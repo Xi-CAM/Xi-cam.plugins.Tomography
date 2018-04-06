@@ -37,7 +37,7 @@ class TomographyPlugin(GUIPlugin):
 
         self.headermodel = QStandardItemModel()
         # self.alignmenttabview = TabView(self.headermodel)
-        self.rawtabview = TabView(self.headermodel, widgetcls=RAWViewer, field='projection')
+        self.rawtabview = TabView(self.headermodel, widgetcls=RAWViewer, field='primary')
         self.recontabs = QTabWidget()
 
         self.workfloweditor = WorkflowEditor(self.workflow)
@@ -66,13 +66,8 @@ class TomographyPlugin(GUIPlugin):
         try:
             msg.showBusy()
             msg.showMessage('Running slice reconstruction...', level=msg.INFO)
-            for process in self.workflow.processes:
-                for name in process.inputs:
-                    if name == 'path':
-                        process.inputs[name].value = \
-                        self.headermodel.item(self.rawtabview.currentIndex()).header.startdoc[
-                            'path']
-            self.workflow.execute(None, threadkey='slicereconstruct',
+            path = self.headermodel.item(self.rawtabview.currentIndex()).header.startdoc['path']
+            self.workflow.execute(None, path=path, threadkey='slicereconstruct',
                                   callback_slot=partial(self.showReconstruction, mode=self.slice),
                                   except_slot=self.exceptionCallback)
         except Exception as ex:
@@ -93,7 +88,7 @@ class TomographyPlugin(GUIPlugin):
             readprocess = self.workflow.processes[0]  # hopefully! TODO: require a readprocess first
             readprocess.path.value = currentheader.startdoc['path']
 
-            numofsinograms = currentheader.meta_array('projection').shape[1]
+            numofsinograms = currentheader.meta_array('primary').shape[1]
 
             executor = DaskExecutor()
             client = distributed.Client()
