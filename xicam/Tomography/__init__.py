@@ -90,18 +90,8 @@ class TomographyPlugin(GUIPlugin):
 
             numofsinograms = currentheader.meta_array('primary').shape[1]
 
-            executor = DaskExecutor()
-            client = distributed.Client()
+            self.workflow.execute_all(None, readprocess=range(0, int(numofsinograms), int(readprocess.chunksize.value)))
 
-            def chunkiterator(workflow):
-                for i in range(0, int(numofsinograms), int(readprocess.chunksize.value)):
-                    readprocess.sinoindex.value = i
-                    yield executor.execute(workflow)
-
-            _reconthread = QThreadFutureIterator(chunkiterator, self.workflow,
-                                                 callback_slot=partial(self.showReconstruction, mode=self.fullrecon),
-                                                 except_slot=self.exceptionCallback)
-            _reconthread.start()
         except Exception as ex:
             msg.logError(ex)
             msg.showReady()
