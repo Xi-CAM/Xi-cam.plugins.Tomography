@@ -6,9 +6,12 @@ from qtpy.QtWidgets import *
 
 from xicam.core.data import load_header, NonDBHeader
 from xicam.core.execution.workflow import Workflow
-from xicam.core.execution.camlinkexecutor import CamLinkExecutor
+from xicam.core.execution.daskexecutor import DaskExecutor
+from xicam.core.execution.localexecutor import LocalExecutor
 from xicam.core import msg
 import distributed
+import dask.threaded
+
 
 from xicam.plugins import GUIPlugin, GUILayout, manager as pluginmanager
 from xicam.plugins.GUIPlugin import PanelState
@@ -21,7 +24,7 @@ from .widgets.tomotoolbar import TomoToolbar
 from .widgets.sliceviewer import SliceViewer
 from .widgets.volumeviewer import VolumeViewer
 
-from .workflows.APS_2BM import Workflow
+from .workflows.APS_2BM import TomoWorkflow
 
 
 class TomographyPlugin(GUIPlugin):
@@ -33,7 +36,7 @@ class TomographyPlugin(GUIPlugin):
     fullrecon = 3
 
     def __init__(self):
-        self.workflow = Workflow()
+        self.workflow = TomoWorkflow()
 
         self.headermodel = QStandardItemModel()
         # self.alignmenttabview = TabView(self.headermodel)
@@ -87,21 +90,36 @@ class TomographyPlugin(GUIPlugin):
             currentheader = self.headermodel.item(self.rawtabview.currentIndex()).header
             readprocess = self.workflow.processes[0]  # hopefully! TODO: require a readprocess first
             readprocess.path.value = currentheader.startdoc['path']
-
             numofsinograms = currentheader.meta_array('primary').shape[1]
+            readprocess.chunksize.value = 10
 
             executor = DaskExecutor()
-            client = distributed.Client()
+            client = distributed.Client("tcp://198.128.214.48:8786", n_workers=3, threads_per_worker=1)
+            #client = distributed.Client(n_workers=3, threads_per_worker=1)
 
+            from distributed import Queue
+
+            readprocess.sinoindex.value = list(range(0, int(numofsinograms), int(readprocess.chunksize.value)))
+
+            #print(readprocess.sinoindex.value)
+
+            executor.execute(self.workflow, client)
+            #executor.execute(self.workflow)
+
+            """            
             def chunkiterator(workflow):
                 for i in range(0, int(numofsinograms), int(readprocess.chunksize.value)):
+                    print("processing:", i)
                     readprocess.sinoindex.value = i
-                    yield executor.execute(workflow)
+                    yield executor.execute(workflow, client)
+                    #yield workflow.execute(None)
 
             _reconthread = QThreadFutureIterator(chunkiterator, self.workflow,
                                                  callback_slot=partial(self.showReconstruction, mode=self.fullrecon),
                                                  except_slot=self.exceptionCallback)
             _reconthread.start()
+            """
+
         except Exception as ex:
             msg.logError(ex)
             msg.showReady()
@@ -120,6 +138,6 @@ class TomographyPlugin(GUIPlugin):
             sliceviewer.setImage(list(result.values())[0].value.squeeze())
             self.recontabs.addTab(sliceviewer, '????')
 
-        if mode == self.fullrecon:
-            self.recontabs.widget(self.recontabs.count() - 1).appendData(list(result.values())[0].value[::4, ::4, ::4])
+        #if mode == self.fullrecon:
+        #    self.recontabs.widget(self.recontabs.count() - 1).appendData(list(result[0].values())[0].value[::4, ::4, ::4])
         msg.showReady()

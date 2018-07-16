@@ -19,12 +19,13 @@ import tomopy
 import numpy as np
 
 
-class Workflow(Workflow):
+class TomoWorkflow(Workflow):
     def __init__(self):
-        super(Workflow, self).__init__('APS-2BM')
+        super(TomoWorkflow, self).__init__('APS-2BM')
         read = read_APS2BM()
         read.sinoindex.value = 1050
         read.chunksize.value = 5
+
 
         norm = Normalize()
         # read.tomo.connect(norm.tomo)
@@ -50,14 +51,12 @@ class Workflow(Workflow):
         # phase.energy.value=27
 
         stripe = RemoveStripeFw()
-        # outliers.corrected.connect(stripe.tomo)
         stripe.level.value = 8
         stripe.wname.value = 'db5'
         stripe.sigma.value = 4
         stripe.pad.value = True
 
         padding = Pad()
-        # stripe.corrected.connect(padding.arr)
         padding.axis.value = 2
         padding.npad.value = 448
         padding.mode.value = 'edge'
@@ -69,8 +68,8 @@ class Workflow(Workflow):
 
 
         gridrec = Recon()
-        # padding.padded.connect(gridrec.tomo)
-        # read.angles.connect(gridrec.theta)
+        ## padding.padded.connect(gridrec.tomo)
+        #read.angles.connect(gridrec.angles)
         gridrec.filter_name.value = 'butterworth'
         gridrec.algorithm.value = 'gridrec'
         gridrec.center.value = np.array([1295 + 448])  # 1295
@@ -78,7 +77,6 @@ class Workflow(Workflow):
         # gridrec.sinogram_order.value = True
 
         crop = Crop()
-        # gridrec.reconstructed.connect(crop.arr)
         crop.p11.value = 448
         crop.p22.value = 448
         crop.p12.value = 448
@@ -88,28 +86,49 @@ class Workflow(Workflow):
         divide = ArrayDivide()
 
         circularmask = CircMask()
-        # crop.croppedarr.connect(circularmask.arr)
         circularmask.val.value = 0
         circularmask.axis.value = 0
         circularmask.ratio.value = 1
 
         writetiff = WriteTiffStack()
 
-        for process in [read,
-                        norm,
-                        outliers,
-                        # maximum,
-                        # neglog,
-                        # phase,
-                        stripe,
-                        padding,
-                        # angles,
-                        gridrec,
-                        crop,
-                        # divide,
-                        circularmask,
-                        # writetiff
-                        ]:
-            self.addProcess(process)
+        print("------------------------------------------")
+        print("------------------------------------------")
+        print("------------------------------------------")
+        print("------------------------------------------")
 
-        self.autoConnectAll()
+        # create connections
+        g1 = Workflow()
+
+        g1.add(norm, "norm")
+        g1.add(stripe)
+        g1.add(padding)
+        g1.add(gridrec, "gridrec")
+        g1.add(crop)
+        g1.add(circularmask)
+        g1.autoConnectAll()
+
+        #self.connect(g1, norm)
+        #self.connect(g1, stripe)
+        #print("XYZ", g1.convertGraph(), g1.findEndTasks())
+
+        self.add(read)
+        self.add(g1)
+
+        #print(g1.gridrec)
+        #read.angles.connect(g1.gridrec.angles)
+
+        self.connect(read, g1.norm)
+        #self.connect(read.angles, g1.gridrec.angles)
+
+        self.stream(read, g1)
+
+        print("------------------------------------------")
+        print("------------------------------------------")
+        print("------------------------------------------")
+        print("------------------------------------------")
+
+
+
+
+

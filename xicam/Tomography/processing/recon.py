@@ -12,7 +12,9 @@ class Recon(ProcessingPlugin):
     Reconstruct object from projection data.
     """
     tomo = Input(description="Input array", type=np.ndarray)
-    angles = Input(description="Projection angles in radians", type=List[float])
+    #angles = Input(description="Projection angles in radians", type=List[float])
+    angles = Input(description="Projection angles in radians", type=np.ndarray)
+
     center = Input(
         description="Location of rotation axis", type=int, default=None)
 
