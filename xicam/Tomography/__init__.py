@@ -94,7 +94,7 @@ class TomographyPlugin(GUIPlugin):
             readprocess.chunksize.value = 10
 
             executor = DaskExecutor()
-            client = distributed.Client("tcp://198.128.214.48:8786", n_workers=3, threads_per_worker=1)
+            client = distributed.Client("tcp://localhost:8786", n_workers=3, threads_per_worker=1)
             #client = distributed.Client(n_workers=3, threads_per_worker=1)
 
             from distributed import Queue
