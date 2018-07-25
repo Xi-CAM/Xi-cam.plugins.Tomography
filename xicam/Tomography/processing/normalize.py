@@ -16,7 +16,18 @@ class Normalize(ProcessingPlugin):
     darks = Input(description="3D dark field data", type=np.ndarray)
     
     def evaluate(self):
+
         self.tomo.value = tomopy.normalize(
             self.tomo.value,
             self.flats.value,
-            self.darks.value)
+            self.darks.value,
+            ncore=1)
+
+    @staticmethod
+    def normalize(arr, flat, dark):
+        denom = flat - dark
+        # ne.evaluate('where(denom<l,l,denom)', out=denom)
+        out = arr - dark
+        out = out / denom
+
+        return out
