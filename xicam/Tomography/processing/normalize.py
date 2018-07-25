@@ -4,7 +4,25 @@
 from xicam.plugins import ProcessingPlugin, Input, InOut
 import tomopy
 import numpy as np
+import numpy
 
+
+class set_numexpr_threads(object):
+
+    def __init__(self, nthreads):
+        #cpu_count = mp.cpu_count()
+        #if nthreads is None or nthreads > cpu_count:
+        #    self.n = cpu_count
+        #else:
+        #    self.n = nthreadsz
+        pass
+
+    def __enter__(self):
+        #self.oldn = ne.set_num_threads(self.n)
+        pass
+    def __exit__(self, exc_type, exc_value, traceback):
+        #ne.set_num_threads(self.oldn)
+        pass
 
 class Normalize(ProcessingPlugin):
     """
@@ -17,16 +35,17 @@ class Normalize(ProcessingPlugin):
     
     def evaluate(self):
 
+        import tomopy.util.mproc
+        tomopy.util.mproc.set_numexpr_threads = set_numexpr_threads
+
         self.tomo.value = tomopy.normalize(
             self.tomo.value,
             self.flats.value,
-            self.darks.value,
-            ncore=1)
+            self.darks.value)
 
     @staticmethod
     def normalize(arr, flat, dark):
         denom = flat - dark
-        # ne.evaluate('where(denom<l,l,denom)', out=denom)
         out = arr - dark
         out = out / denom
 
