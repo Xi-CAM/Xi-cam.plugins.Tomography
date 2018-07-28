@@ -101,7 +101,7 @@ class TomoWorkflow(Workflow):
         g1 = Workflow()
 
         g1.add(norm, "norm")
-        g1.add(stripe)
+        #g1.add(stripe)
         g1.add(padding)
         g1.add(gridrec, "gridrec")
         g1.add(crop)
@@ -119,7 +119,7 @@ class TomoWorkflow(Workflow):
         #read.angles.connect(g1.gridrec.angles)
 
         self.connect(read, g1.norm)
-        #self.connect(read.angles, g1.gridrec.angles)
+        self.connect(read.angles, g1.gridrec.angles)
 
         self.stream(read, g1)
 
