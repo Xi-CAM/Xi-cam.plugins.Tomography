@@ -16,7 +16,7 @@ import dask.threaded
 from xicam.plugins import GUIPlugin, GUILayout, manager as pluginmanager
 from xicam.plugins.GUIPlugin import PanelState
 
-from xicam.gui.threads import QThreadFuture, QThreadFutureIterator
+from xicam.gui.threads import QThreadFuture, QThreadFutureIterator, Invoker, InvokeEvent
 from xicam.gui.widgets.tabview import TabView
 from xicam.gui.widgets.linearworkfloweditor import WorkflowEditor
 from .widgets.RAWViewer import RAWViewer
@@ -103,8 +103,25 @@ class TomographyPlugin(GUIPlugin):
 
             #print(readprocess.sinoindex.value)
 
-            executor.execute(self.workflow, client)
-            #executor.execute(self.workflow)
+            self.sliceviewer = SliceViewer()
+            self.recontabs.addTab(self.sliceviewer, '????')
+            qApp.processEvents()
+            #executor.execute(self.workflow, callback=self.callback, client=client)
+
+            def chunkiterator(workflow):
+                def callback(data):
+                    print("CALLING DATA")
+                    yield data
+
+                executor.execute(workflow, callback=self.callback, client=client)
+
+            _reconthread = QThreadFuture(chunkiterator)
+
+            #_reconthread = QThreadFutureIterator(chunkiterator, self.workflow,
+            #                                     callback_slot=partial(self.showReconstruction, mode=self.fullrecon),
+            #                                     except_slot=self.exceptionCallback)
+            _reconthread.start()
+
 
             """            
             def chunkiterator(workflow):
@@ -125,6 +142,20 @@ class TomographyPlugin(GUIPlugin):
             msg.showReady()
             msg.clearMessage()
 
+    _invoker = Invoker()
+
+    def fn(self, result):
+        self.sliceviewer.setImage(result)
+
+    def callback(self, result):
+
+        def fn(_invoker, slice_viewer, my_result):
+            def my_fn():
+                slice_viewer.setImage(my_result)
+            QCoreApplication.postEvent(_invoker, InvokeEvent(my_fn))
+
+        fn(self._invoker, self.sliceviewer, result)
+
     def exceptionCallback(self, ex):
         msg.notifyMessage("Reconstruction failed;\n see log for error")
         msg.showMessage("Reconstruction failed; see log for error")
@@ -133,11 +164,12 @@ class TomographyPlugin(GUIPlugin):
 
     def showReconstruction(self, result, mode):
         print('result:', result)
+
         if mode == self.slice:
             sliceviewer = SliceViewer()
             sliceviewer.setImage(list(result.values())[0].value.squeeze())
             self.recontabs.addTab(sliceviewer, '????')
 
-        #if mode == self.fullrecon:
-        #    self.recontabs.widget(self.recontabs.count() - 1).appendData(list(result[0].values())[0].value[::4, ::4, ::4])
+        if mode == self.fullrecon:
+            self.recontabs.widget(self.recontabs.count() - 1).appendData(result)
         msg.showReady()

@@ -101,7 +101,7 @@ class TomoWorkflow(Workflow):
         g1 = Workflow()
 
         g1.add(norm, "norm")
-        #g1.add(stripe)
+        g1.add(stripe)
         g1.add(padding)
         g1.add(gridrec, "gridrec")
         g1.add(crop)
