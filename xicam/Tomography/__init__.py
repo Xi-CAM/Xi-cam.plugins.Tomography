@@ -78,6 +78,8 @@ class TomographyPlugin(GUIPlugin):
             msg.showReady()
             msg.clearMessage()
 
+    #_invoker = Invoker()
+
     def fullReconstruction(self):
         volumeviewer = VolumeViewer()
         self.recontabs.addTab(volumeviewer, '????')
@@ -94,7 +96,10 @@ class TomographyPlugin(GUIPlugin):
             readprocess.chunksize.value = 10
 
             executor = DaskExecutor()
-            client = distributed.Client("tcp://localhost:8786", n_workers=3, threads_per_worker=1)
+            #client = distributed.Client("tcp://localhost:8786", n_workers=3, threads_per_worker=1)
+            client = distributed.Client("tcp://localhost:8786")
+
+            #client = distributed.Client("tcp://198.128.217.212:8786")
             #client = distributed.Client(n_workers=3, threads_per_worker=1)
 
             from distributed import Queue
@@ -105,21 +110,15 @@ class TomographyPlugin(GUIPlugin):
 
             self.sliceviewer = SliceViewer()
             self.recontabs.addTab(self.sliceviewer, '????')
-            qApp.processEvents()
+            #qApp.processEvents()
+
             #executor.execute(self.workflow, callback=self.callback, client=client)
 
-            def chunkiterator(workflow):
-                def callback(data):
-                    print("CALLING DATA")
-                    yield data
-
-                executor.execute(workflow, callback=self.callback, client=client)
-
-            _reconthread = QThreadFuture(chunkiterator)
+            _reconthread = QThreadFuture(self.chunkiterator, executor, None, self.workflow, client)
 
             #_reconthread = QThreadFutureIterator(chunkiterator, self.workflow,
             #                                     callback_slot=partial(self.showReconstruction, mode=self.fullrecon),
-            #                                     except_slot=self.exceptionCallback)
+            #                                    except_slot=self.exceptionCallback)
             _reconthread.start()
 
 
@@ -142,19 +141,25 @@ class TomographyPlugin(GUIPlugin):
             msg.showReady()
             msg.clearMessage()
 
+    def chunkiterator(self, executor, _invoker, workflow, client):
+        print("calling chunk iterator")
+        executor.execute(workflow, callback=self.callback, client=client)
+        print("end chunk iterator")
+
     _invoker = Invoker()
 
-    def fn(self, result):
-        self.sliceviewer.setImage(result)
-
     def callback(self, result):
+        print("calling here :)")
 
-        def fn(_invoker, slice_viewer, my_result):
-            def my_fn():
-                slice_viewer.setImage(my_result)
-            QCoreApplication.postEvent(_invoker, InvokeEvent(my_fn))
+        sliceviewer = self.sliceviewer
 
-        fn(self._invoker, self.sliceviewer, result)
+        def my_fn():
+            print("setting image", len(result), result.shape)
+            sliceviewer.setImage(result)
+
+        QCoreApplication.postEvent(self._invoker, InvokeEvent(my_fn))
+
+        # fn(_invoker, result)
 
     def exceptionCallback(self, ex):
         msg.notifyMessage("Reconstruction failed;\n see log for error")
