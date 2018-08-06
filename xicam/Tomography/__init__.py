@@ -50,6 +50,10 @@ class TomographyPlugin(GUIPlugin):
         self.tomotoolbar.sigSliceReconstruction.connect(self.sliceReconstruct)
         self.tomotoolbar.sigFullReconstruction.connect(self.fullReconstruction)
 
+        self._invoker = Invoker()
+        self.sliceviewer = SliceViewer()
+        self.volumeviewer = VolumeViewer()
+
         self.stages = {
             'Alignment': GUILayout(QLabel('Alignment'), right=self.workfloweditor, top=self.tomotoolbar),
             'Preprocess': GUILayout(self.rawtabview, right=self.workfloweditor, top=self.tomotoolbar),
@@ -78,11 +82,8 @@ class TomographyPlugin(GUIPlugin):
             msg.showReady()
             msg.clearMessage()
 
-    #_invoker = Invoker()
-
     def fullReconstruction(self):
-        volumeviewer = VolumeViewer()
-        self.recontabs.addTab(volumeviewer, '????')
+        self.recontabs.addTab(self.volumeviewer, 'Volume Viewer')
 
         currentitem = self.headermodel.item(self.rawtabview.currentIndex())
         if not currentitem: msg.showMessage('Error: You must open files before reconstructing.')
@@ -97,44 +98,16 @@ class TomographyPlugin(GUIPlugin):
 
             executor = DaskExecutor()
             #client = distributed.Client("tcp://localhost:8786", n_workers=3, threads_per_worker=1)
-            client = distributed.Client("tcp://localhost:8786")
-
-            #client = distributed.Client("tcp://198.128.217.212:8786")
-            #client = distributed.Client(n_workers=3, threads_per_worker=1)
-
-            from distributed import Queue
+            #client = distributed.Client("tcp://localhost:8786")
+            client = distributed.Client(n_workers=1, threads_per_worker=8)
 
             readprocess.sinoindex.value = list(range(0, int(numofsinograms), int(readprocess.chunksize.value)))
 
-            #print(readprocess.sinoindex.value)
-
-            self.sliceviewer = SliceViewer()
-            self.recontabs.addTab(self.sliceviewer, '????')
-            #qApp.processEvents()
-
-            #executor.execute(self.workflow, callback=self.callback, client=client)
+            self.recontabs.addTab(self.sliceviewer, 'SliceViewer')
 
             _reconthread = QThreadFuture(self.chunkiterator, executor, None, self.workflow, client)
 
-            #_reconthread = QThreadFutureIterator(chunkiterator, self.workflow,
-            #                                     callback_slot=partial(self.showReconstruction, mode=self.fullrecon),
-            #                                    except_slot=self.exceptionCallback)
             _reconthread.start()
-
-
-            """            
-            def chunkiterator(workflow):
-                for i in range(0, int(numofsinograms), int(readprocess.chunksize.value)):
-                    print("processing:", i)
-                    readprocess.sinoindex.value = i
-                    yield executor.execute(workflow, client)
-                    #yield workflow.execute(None)
-
-            _reconthread = QThreadFutureIterator(chunkiterator, self.workflow,
-                                                 callback_slot=partial(self.showReconstruction, mode=self.fullrecon),
-                                                 except_slot=self.exceptionCallback)
-            _reconthread.start()
-            """
 
         except Exception as ex:
             msg.logError(ex)
@@ -143,23 +116,19 @@ class TomographyPlugin(GUIPlugin):
 
     def chunkiterator(self, executor, _invoker, workflow, client):
         print("calling chunk iterator")
-        executor.execute(workflow, callback=self.callback, client=client)
-        print("end chunk iterator")
-
-    _invoker = Invoker()
-
-    def callback(self, result):
-        print("calling here :)")
 
         sliceviewer = self.sliceviewer
+        _invoker = self._invoker
 
-        def my_fn():
-            print("setting image", len(result), result.shape)
-            sliceviewer.setImage(result)
+        def callback(result):
+            def my_fn():
+                print("setting image", len(result), result.shape)
+                sliceviewer.setImage(result)
 
-        QCoreApplication.postEvent(self._invoker, InvokeEvent(my_fn))
+            QCoreApplication.postEvent(_invoker, InvokeEvent(my_fn))
 
-        # fn(_invoker, result)
+        executor.execute(workflow, callback=callback, client=client)
+        print("end chunk iterator")
 
     def exceptionCallback(self, ex):
         msg.notifyMessage("Reconstruction failed;\n see log for error")
@@ -170,11 +139,11 @@ class TomographyPlugin(GUIPlugin):
     def showReconstruction(self, result, mode):
         print('result:', result)
 
-        if mode == self.slice:
-            sliceviewer = SliceViewer()
-            sliceviewer.setImage(list(result.values())[0].value.squeeze())
-            self.recontabs.addTab(sliceviewer, '????')
+        #if mode == self.slice:
+        #    sliceviewer = SliceViewer()
+        #    sliceviewer.setImage(list(result.values())[0].value.squeeze())
+        #    self.recontabs.addTab(sliceviewer, '????')
 
-        if mode == self.fullrecon:
-            self.recontabs.widget(self.recontabs.count() - 1).appendData(result)
-        msg.showReady()
+        #if mode == self.fullrecon:
+        #    self.recontabs.widget(self.recontabs.count() - 1).appendData(result)
+        #msg.showReady()

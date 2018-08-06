@@ -90,6 +90,8 @@ class TomoWorkflow(Workflow):
         circularmask.axis.value = 0
         circularmask.ratio.value = 1
 
+        circularmask.recon.visualize = True
+
         writetiff = WriteTiffStack()
 
         print("------------------------------------------")
@@ -122,6 +124,8 @@ class TomoWorkflow(Workflow):
         self.connect(read.angles, g1.gridrec.angles)
 
         self.stream(read, g1)
+
+
 
         print("------------------------------------------")
         print("------------------------------------------")
