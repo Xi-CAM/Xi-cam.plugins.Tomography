@@ -90,7 +90,7 @@ class TomoWorkflow(Workflow):
         circularmask.axis.value = 0
         circularmask.ratio.value = 1
 
-        circularmask.recon.visualize = True
+        #circularmask.recon.visualize = True
 
         writetiff = WriteTiffStack()
 

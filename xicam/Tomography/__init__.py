@@ -38,6 +38,11 @@ class TomographyPlugin(GUIPlugin):
     def __init__(self):
         self.workflow = TomoWorkflow()
 
+        tasks = self.workflow.getTasks()
+
+        for task in tasks:
+            task.attach(partial(self.callback, task))
+
         self.headermodel = QStandardItemModel()
         # self.alignmenttabview = TabView(self.headermodel)
         self.rawtabview = TabView(self.headermodel, widgetcls=RAWViewer, field='primary')
@@ -51,8 +56,12 @@ class TomographyPlugin(GUIPlugin):
         self.tomotoolbar.sigFullReconstruction.connect(self.fullReconstruction)
 
         self._invoker = Invoker()
-        self.sliceviewer = SliceViewer()
-        self.volumeviewer = VolumeViewer()
+        self.sliceviewer = None
+        #self.volumeviewer = VolumeViewer()
+
+        self.executor = None
+
+        self.viewers = {}
 
         self.stages = {
             'Alignment': GUILayout(QLabel('Alignment'), right=self.workfloweditor, top=self.tomotoolbar),
@@ -60,6 +69,29 @@ class TomographyPlugin(GUIPlugin):
             'Reconstruct': GUILayout(self.recontabs, top=self.tomotoolbar, right=self.workfloweditor),
         }
         super(TomographyPlugin, self).__init__()
+
+    def callback(self, task, name, param, value):
+        # print("callback changed", task, name, param, value)
+
+        if name != "__visualize__":
+            pass
+
+        if self.executor is None:
+            return
+
+        viewer = task.name + ":" + param.name().replace(" (out)", "")
+
+        if viewer not in self.viewers:
+            sliceviewer = SliceViewer()
+            self.viewers[viewer] = sliceviewer
+            self.recontabs.addTab(sliceviewer, viewer + " Viewer")
+
+        if viewer in self.viewers and value == False:
+            index = self.recontabs.indexOf(self.viewers[viewer])
+            self.recontabs.removeTab(index)
+            del self.viewers[viewer]
+
+        self.executor.update_parameters(task, param.name().replace(" (out)", ""), value)
 
     def appendHeader(self, header: NonDBHeader, **kwargs):
         item = QStandardItem(header.startdoc.get('sample_name', '????'))
@@ -83,7 +115,7 @@ class TomographyPlugin(GUIPlugin):
             msg.clearMessage()
 
     def fullReconstruction(self):
-        self.recontabs.addTab(self.volumeviewer, 'Volume Viewer')
+        #self.recontabs.addTab(self.volumeviewer, 'Volume Viewer')
 
         currentitem = self.headermodel.item(self.rawtabview.currentIndex())
         if not currentitem: msg.showMessage('Error: You must open files before reconstructing.')
@@ -97,13 +129,15 @@ class TomographyPlugin(GUIPlugin):
             readprocess.chunksize.value = 10
 
             executor = DaskExecutor()
+            self.executor = executor
+
             #client = distributed.Client("tcp://localhost:8786", n_workers=3, threads_per_worker=1)
-            #client = distributed.Client("tcp://localhost:8786")
-            client = distributed.Client(n_workers=1, threads_per_worker=8)
+            client = distributed.Client("tcp://localhost:8786")
+            #client = distributed.Client(n_workers=1, threads_per_worker=8)
 
             readprocess.sinoindex.value = list(range(0, int(numofsinograms), int(readprocess.chunksize.value)))
 
-            self.recontabs.addTab(self.sliceviewer, 'SliceViewer')
+            #self.recontabs.addTab(self.sliceviewer, 'SliceViewer')
 
             _reconthread = QThreadFuture(self.chunkiterator, executor, None, self.workflow, client)
 
@@ -114,20 +148,21 @@ class TomographyPlugin(GUIPlugin):
             msg.showReady()
             msg.clearMessage()
 
-    def chunkiterator(self, executor, _invoker, workflow, client):
-        print("calling chunk iterator")
-
-        sliceviewer = self.sliceviewer
+    def executor_callback(self, result):
+        viewers = self.viewers
         _invoker = self._invoker
 
-        def callback(result):
-            def my_fn():
-                print("setting image", len(result), result.shape)
-                sliceviewer.setImage(result)
+        def my_fn():
+            name, value = result
+            print("setting image", name, len(value), value.shape)
+            if name in viewers:
+                viewers[name].setImage(value)
 
-            QCoreApplication.postEvent(_invoker, InvokeEvent(my_fn))
+        QCoreApplication.postEvent(_invoker, InvokeEvent(my_fn))
 
-        executor.execute(workflow, callback=callback, client=client)
+    def chunkiterator(self, executor, _invoker, workflow, client):
+        print("calling chunk iterator")
+        executor.execute(workflow, callback=self.executor_callback, client=client)
         print("end chunk iterator")
 
     def exceptionCallback(self, ex):
