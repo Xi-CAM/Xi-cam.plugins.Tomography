@@ -19,13 +19,15 @@ class APS2BM(DataHandlerPlugin):
     DEFAULT_EXTENTIONS = ['.hdf', '.h5']
 
     descriptor_keys = []
+    def __init__(self, path):
+        self.path = path
 
-    def __call__(self, path, arr='data', slice=None, **kwargs):
-        h5 = h5py.File(path, 'r')
+    def __call__(self, arr='data', slc=None, **kwargs):
+        h5 = h5py.File(self.path, 'r')
         if arr == 'sino':
-            return np.squeeze(h5['exchange']['data'][:][slice])
+            return np.squeeze(h5['exchange']['data'][:][slc])
         else:
-            return np.squeeze(h5['exchange'][arr][slice])
+            return np.squeeze(h5['exchange'][arr][slc])
             # if 'flat' in kwargs:
             #     # return np.squeeze(dxchange.read_aps_2bm(path, (0, 1, 1), **kwargs)[1])
             # elif 'dark' in kwargs:
@@ -40,16 +42,16 @@ class APS2BM(DataHandlerPlugin):
     @classmethod
     def getEventDocs(cls, path, descriptor_uid):
         for proj_index in range(cls.num_projections(path)):
-            yield embedded_local_event_doc(descriptor_uid, 'primary', cls, (path, 'data', proj_index))
+            yield embedded_local_event_doc(descriptor_uid, 'primary', cls, (path,), resource_kwargs=dict(arr='data', slc=proj_index))
 
         for sino_index in range(cls.num_sinograms(path)):
-            yield embedded_local_event_doc(descriptor_uid, 'sinogram', cls, (path, 'sino', sino_index))
+            yield embedded_local_event_doc(descriptor_uid, 'sinogram', cls, (path,), resource_kwargs=dict(arr='sino', slc=sino_index))
 
         for flat_index in range(cls.num_flats(path)):
-            yield embedded_local_event_doc(descriptor_uid, 'flat', cls, (path, 'data_white', flat_index))
+            yield embedded_local_event_doc(descriptor_uid, 'flat', cls, (path,), resource_kwargs=dict(arr='data_white', slc=flat_index))
 
         for dark_index in range(cls.num_darks(path)):
-            yield embedded_local_event_doc(descriptor_uid, 'dark', cls, (path, 'data_dark', dark_index))
+            yield embedded_local_event_doc(descriptor_uid, 'dark', cls, (path,), resource_kwargs=dict(arr='data_dark', slc=dark_index))
 
     @classmethod
     def num_projections(cls, path):
