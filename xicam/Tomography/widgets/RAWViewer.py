@@ -26,7 +26,7 @@ class RAWViewer(DynImageView, QWidgetPlugin):
             msg.logError(ex)
 
         if data:
-            kwargs['transform'] = QTransform(0, -1, 1, 0, 0, data.shape[-2])
+            # kwargs['transform'] = QTransform(0, -1, 1, 0, 0, data.shape[-2])
             super(RAWViewer, self).setImage(img=data, *args, **kwargs)
 
 # class RAWViewer(QWidget):

@@ -10,30 +10,29 @@ from pathlib import Path
 import h5py
 import numpy as np
 
-class APS2BM(DataHandlerPlugin):
+
+class NSLSII_FXI18(DataHandlerPlugin):
     """
-    This plugin will only work for APS_2BM until a single entry point is made for DataExchange
+    A data handler for NSLS-II's FXI18 beamline
     """
-    name = 'APS2BM'
+    name = 'NSLSII_FXI18'
 
     DEFAULT_EXTENTIONS = ['.hdf', '.h5']
 
     descriptor_keys = []
+
     def __init__(self, path):
+        super(NSLSII_FXI18, self).__init__()
         self.path = path
 
-    def __call__(self, arr='data', slc=None, **kwargs):
+    def __call__(self, arr='img_tomo', slc=None, **kwargs):
         h5 = h5py.File(self.path, 'r')
         if arr == 'sino':
-            return np.squeeze(h5['exchange']['data'][:][slc])
+            return np.squeeze(h5['img_tomo'][:][slc])
         else:
-            return np.squeeze(h5['exchange'][arr][slc])
-            # if 'flat' in kwargs:
-            #     # return np.squeeze(dxchange.read_aps_2bm(path, (0, 1, 1), **kwargs)[1])
-            # elif 'dark' in kwargs:
-            #     return np.squeeze(dxchange.read_aps_2bm(path, (0, 1, 1), **kwargs)[2])
-            # else:
-            #     return np.squeeze(dxchange.read_aps_2bm(path, *args, **kwargs)[0])
+            return np.squeeze(h5[arr][slc])
+
+    # TODO add a validator
 
     @classmethod
     def reduce_paths(cls, paths):
@@ -41,38 +40,45 @@ class APS2BM(DataHandlerPlugin):
 
     @classmethod
     def getEventDocs(cls, path, descriptor_uid):
+        with h5py.File(path, 'r') as h5:
+            angles = np.deg2rad(h5['angle'])
+
         for proj_index in range(cls.num_projections(path)):
             yield embedded_local_event_doc(descriptor_uid, 'projection', cls, (path,),
-                                           resource_kwargs=dict(arr='data', slc=proj_index))
+                                           resource_kwargs=dict(arr='img_tomo', slc=proj_index),
+                                           metadata={'angle': angles[proj_index]})
 
         for sino_index in range(cls.num_sinograms(path)):
-            yield embedded_local_event_doc(descriptor_uid, 'sinogram', cls, (path,), resource_kwargs=dict(arr='sino', slc=sino_index))
+            yield embedded_local_event_doc(descriptor_uid, 'sinogram', cls, (path,),
+                                           resource_kwargs=dict(arr='sino', slc=sino_index))
 
         for flat_index in range(cls.num_flats(path)):
-            yield embedded_local_event_doc(descriptor_uid, 'flat', cls, (path,), resource_kwargs=dict(arr='data_white', slc=flat_index))
+            yield embedded_local_event_doc(descriptor_uid, 'flat', cls, (path,),
+                                           resource_kwargs=dict(arr='img_bkg', slc=flat_index))
 
         for dark_index in range(cls.num_darks(path)):
-            yield embedded_local_event_doc(descriptor_uid, 'dark', cls, (path,), resource_kwargs=dict(arr='data_dark', slc=dark_index))
+            yield embedded_local_event_doc(descriptor_uid, 'dark', cls, (path,),
+                                           resource_kwargs=dict(arr='img_dark', slc=dark_index))
 
     @classmethod
     def num_projections(cls, path):
         with h5py.File(path, 'r') as h5:
-            return h5['exchange']['data'].shape[0]
+            return h5['img_tomo'].shape[0]
 
     @classmethod
     def num_sinograms(cls, path):
         with h5py.File(path, 'r') as h5:
-            return h5['exchange']['data'].shape[1]
+            return h5['img_tomo'].shape[1]
 
     @classmethod
     def num_flats(cls, path):
         with h5py.File(path, 'r') as h5:
-            return h5['exchange']['data_white'].shape[0]
+            return h5['img_bkg'].shape[0]
 
     @classmethod
     def num_darks(cls, path):
         with h5py.File(path, 'r') as h5:
-            return h5['exchange']['data_dark'].shape[0]
+            return h5['img_dark'].shape[0]
 
     @classmethod
     def getStartDoc(cls, path, start_uid):

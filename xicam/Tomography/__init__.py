@@ -11,12 +11,6 @@ from xicam.plugins import GUIPlugin, GUILayout
 
 from xicam.gui.widgets.tabview import TabView
 from xicam.gui.widgets.linearworkfloweditor import WorkflowEditor
-from .widgets.RAWViewer import RAWViewer
-from .widgets.tomotoolbar import TomoToolbar
-from .widgets.sliceviewer import SliceViewer
-from .widgets.volumeviewer import VolumeViewer
-
-from .workflows.APS_2BM import Workflow
 
 
 class TomographyPlugin(GUIPlugin):
@@ -28,11 +22,16 @@ class TomographyPlugin(GUIPlugin):
     fullrecon = 3
 
     def __init__(self):
+        from .widgets.RAWViewer import RAWViewer
+        from .widgets.tomotoolbar import TomoToolbar
+        from .widgets.sliceviewer import SliceViewer
+        from .widgets.volumeviewer import VolumeViewer
+        from .workflows.APS_2BM import Workflow
         self.workflow = Workflow()
 
         self.headermodel = QStandardItemModel()
         # self.alignmenttabview = TabView(self.headermodel)
-        self.rawtabview = TabView(self.headermodel, widgetcls=RAWViewer, field='primary')
+        self.rawtabview = TabView(self.headermodel, widgetcls=RAWViewer, field='projection')
         self.recontabs = QTabWidget()
 
         self.workfloweditor = WorkflowEditor(self.workflow)
@@ -71,6 +70,7 @@ class TomographyPlugin(GUIPlugin):
             msg.clearMessage()
 
     def fullReconstruction(self):
+        from .widgets.volumeviewer import VolumeViewer
         volumeviewer = VolumeViewer()
         self.recontabs.addTab(volumeviewer, '????')
 
@@ -101,6 +101,7 @@ class TomographyPlugin(GUIPlugin):
     def showReconstruction(self, result, mode):
         print('result:', result)
         if mode == self.slice:
+            from .widgets.sliceviewer import SliceViewer
             sliceviewer = SliceViewer()
             sliceviewer.setImage(list(result.values())[0].value.squeeze())
             self.recontabs.addTab(sliceviewer, '????')
